@@ -1,0 +1,28 @@
+<mat-card>
+  <h2>{{ editing ? 'Edit Team' : 'New Team' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Team Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Assign Lead</mat-label>
+      <mat-select formControlName="leadId">
+        <mat-option *ngFor="let u of users" [value]="u.id">{{ u.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="active">Active</mat-option>
+        <mat-option value="inactive">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit">Save</button>
+    <button mat-button routerLink="/teams">Cancel</button>
+  </form>
+</mat-card>

@@ -1,0 +1,44 @@
+.dashboard-tabs {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 0 16px;
+
+  ::ng-deep .mat-mdc-tab-header {
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  ::ng-deep .mat-mdc-tab-labels {
+    gap: 24px; // space between tabs
+  }
+
+  ::ng-deep .mat-mdc-tab-label {
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    min-width: auto;
+    padding: 12px 0;
+    transition: color 0.2s ease;
+  }
+
+  ::ng-deep .mat-mdc-tab-label:hover {
+    color: #2563eb; // hover blue
+  }
+
+  ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-label-active {
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  ::ng-deep .mat-mdc-ink-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: #2563eb; // active underline color
+  }
+
+  ::ng-deep .mat-mdc-tab-body-wrapper {
+    padding: 16px 0;
+  }
+}

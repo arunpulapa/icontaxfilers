@@ -1,0 +1,11 @@
+<mat-card>
+  <h2>Manage Members</h2>
+
+  <mat-selection-list [(ngModel)]="selectedMembers">
+    <mat-list-option *ngFor="let u of users" [value]="u.id">
+      {{ u.name }} ({{ u.email }})
+    </mat-list-option>
+  </mat-selection-list>
+
+  <button mat-flat-button color="primary" (click)="save()">Save Members</button>
+</mat-card>

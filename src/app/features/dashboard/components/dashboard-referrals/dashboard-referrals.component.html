@@ -1,0 +1,65 @@
+<div class="referrals-grid">
+  <!-- KPI Cards -->
+  <mat-card *ngFor="let s of stats" class="referral-card">
+    <div class="referral-header">
+      <mat-icon class="referral-icon" [ngClass]="s.color">{{ s.icon }}</mat-icon>
+      <span class="referral-label">{{ s.label }}</span>
+    </div>
+
+    <div class="referral-value">{{ s.value }}</div>
+
+    <mat-progress-bar
+      *ngIf="s.progress !== undefined"
+      [color]="s.color"
+      mode="determinate"
+      [value]="s.progress">
+    </mat-progress-bar>
+
+    <div class="referral-meta">
+      <span>{{ s.meta }}</span>
+      <span class="trend" [ngClass]="{up: s.trend > 0, down: s.trend < 0}">
+        <mat-icon>{{ s.trend > 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+        {{ s.trend }}%
+      </span>
+    </div>
+  </mat-card>
+</div>
+
+<!-- Divider -->
+<h3 class="section-title">Recent Referrals</h3>
+
+<!-- Referrals Table -->
+<table mat-table [dataSource]="recentReferrals" class="mat-elevation-z1 referrals-table">
+  <!-- Name -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Referred By</th>
+    <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+  </ng-container>
+
+  <!-- Client -->
+  <ng-container matColumnDef="client">
+    <th mat-header-cell *matHeaderCellDef>Client</th>
+    <td mat-cell *matCellDef="let r">{{ r.client }}</td>
+  </ng-container>
+
+  <!-- Status -->
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let r">
+      <span [class.converted]="r.status === 'Converted'"
+            [class.pending]="r.status === 'Pending'"
+            [class.rejected]="r.status === 'Rejected'">
+        {{ r.status }}
+      </span>
+    </td>
+  </ng-container>
+
+  <!-- Date -->
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef>Date</th>
+    <td mat-cell *matCellDef="let r">{{ r.date | date }}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="refCols"></tr>
+  <tr mat-row *matRowDef="let row; columns: refCols;"></tr>
+</table>

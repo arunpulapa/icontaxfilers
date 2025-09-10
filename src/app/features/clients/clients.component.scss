@@ -1,0 +1,59 @@
+.status-active {
+  color: #fff;
+  background: #4caf50;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+.status-inactive {
+  color: #fff;
+  background: #f44336;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+mat-card {
+  padding: 16px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.search-field {
+  width: 300px;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+
+  th {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
+  .active {
+    color: green;
+    font-weight: 600;
+  }
+  .inactive {
+    color: gray;
+    font-weight: 600;
+  }
+}

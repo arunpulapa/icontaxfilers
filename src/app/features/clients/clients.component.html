@@ -1,0 +1,63 @@
+<mat-card>
+  <!-- Header -->
+  <div class="list-header">
+    <h2>Clients</h2>
+    <button mat-flat-button color="primary" routerLink="/clients/new">
+      <mat-icon>add</mat-icon> Add Client
+    </button>
+  </div>
+
+  <!-- Search -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      placeholder="Search by name or email"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="applyFilter()"
+    />
+  </mat-form-field>
+
+  <!-- Table -->
+  <table mat-table [dataSource]="filteredClients" class="mat-elevation-z1">
+
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let c">{{ c.email }}</td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let c">
+     <span [ngClass]="{ 'status-active': c.status === 'active', 'status-inactive': c.status === 'inactive' }">
+  {{ c.status }}
+</span>
+
+      </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let c">
+        <button mat-icon-button color="primary" [routerLink]="['/clients', c.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="delete(c.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="cols"></tr>
+    <tr mat-row *matRowDef="let row; columns: cols;"></tr>
+  </table>
+</mat-card>

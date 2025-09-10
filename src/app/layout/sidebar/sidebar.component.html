@@ -1,0 +1,23 @@
+<!-- sidebar.component.html -->
+<div class="sidebar-root">
+  <div class="sidebar-brand" (click)="goHome()">
+    <img src="https://img.freepik.com/premium-vector/business-finance-logo-template_887694-1147.jpg" alt="logo" class="logo" />
+    <div class="brand-text" style="color: black;">ICON TAX</div>
+  </div>
+
+  <nav class="sidebar-nav" role="navigation" aria-label="Main menu">
+    <mat-nav-list>
+      <ng-container *ngFor="let m of menu">
+        <a mat-list-item
+           [routerLink]="m.path"
+           routerLinkActive="active-link"
+           (click)="navigate.emit()"
+           class="menu-item">
+          <span class="title">
+            <mat-icon class="menu-icon" style="margin-bottom: -8px !important;">{{ m.icon }}</mat-icon> <span >{{ m.title }}</span>
+          </span>
+        </a>
+      </ng-container>
+    </mat-nav-list>
+  </nav>
+</div>

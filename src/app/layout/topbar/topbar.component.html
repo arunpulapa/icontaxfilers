@@ -1,0 +1,25 @@
+<mat-toolbar class="topbar">
+  <!-- Menu -->
+  <button mat-icon-button class="menu-btn" (click)="onMenuClick()" aria-label="Toggle menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="spacer"></div>
+
+  <!-- Notifications -->
+  <button mat-icon-button [matBadge]="notifications.length" matBadgeColor="warn" class="notif-btn" aria-label="Notifications">
+    <mat-icon>notifications</mat-icon>
+  </button>
+
+  <!-- User menu -->
+  <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnhswBymc7nkqO5YqTtvsZILa17mgK5Ar7UA&s" alt="avatar" class="avatar" />
+    <span class="username">Arun</span>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item><mat-icon>person</mat-icon> Profile</button>
+    <button mat-menu-item><mat-icon>settings</mat-icon> Settings</button>
+    <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Logout</button>
+  </mat-menu>
+</mat-toolbar>

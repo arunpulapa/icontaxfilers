@@ -1,0 +1,22 @@
+<div class="kra-container">
+  <!-- KPI Section -->
+  <div class="kpi-grid">
+    <mat-card *ngFor="let kpi of kpis" class="kpi-card">
+      <div class="kpi-header">
+        <mat-icon class="kpi-icon" [ngClass]="kpi.color">{{ kpi.icon }}</mat-icon>
+        <span class="kpi-label">{{ kpi.label }}</span>
+      </div>
+      <div class="kpi-value" [ngClass]="kpi.color">{{ kpi.value }}</div>
+      <div class="kpi-meta">{{ kpi.meta }}</div>
+    </mat-card>
+  </div>
+
+  <!-- Chart Section -->
+  <mat-card class="chart-card">
+    <div class="chart-header">
+      <h3>Payments Overview</h3>
+      <button mat-stroked-button color="primary">View More</button>
+    </div>
+    <canvas #paymentsChart></canvas>
+  </mat-card>
+</div>

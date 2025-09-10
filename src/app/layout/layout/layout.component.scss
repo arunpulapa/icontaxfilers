@@ -1,0 +1,29 @@
+.app-sidenav-container {
+  height: 100vh;
+}
+
+.app-sidenav {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
+
+.app-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  padding: 20px;
+  flex: 1 1 auto;
+  background: #f7f9fc;
+}
+
+.app-footer {
+  padding: 12px 20px;
+  font-size: 13px;
+  color: #6b7280;
+  border-top: 1px solid rgba(0,0,0,0.04);
+  background: #ffffff;
+}

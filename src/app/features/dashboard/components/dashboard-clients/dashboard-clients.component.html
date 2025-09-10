@@ -1,0 +1,9 @@
+<div class="kpi-grid">
+  <mat-card *ngFor="let s of stats" class="kpi-card">
+    <mat-icon [color]="s.color">{{ s.icon }}</mat-icon>
+    <div class="info">
+      <div class="value">{{ s.value }}</div>
+      <div class="label">{{ s.label }}</div>
+    </div>
+  </mat-card>
+</div>
