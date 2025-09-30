@@ -1,1 +1,54 @@
-<p>invoices works!</p>
+<div class="invoice-container">
+  <div class="invoice-header">
+    <h3>🧾 Invoice</h3>
+  </div>
+
+  <!-- Dynamic Items Rows -->
+  <div *ngFor="let row of items; let i = index" class="item-row">
+    <select [(ngModel)]="row.item" [name]="'item' + i" class="dropdown">
+      <option value="" disabled>Select Item</option>
+      <option *ngFor="let item of availableItems" [value]="item">{{ item }}</option>
+    </select>
+
+    <input type="number" [(ngModel)]="row.amount" [name]="'amount' + i" class="amount-input" placeholder="0" />
+
+    <button *ngIf="items.length > 1" class="remove-btn" type="button" (click)="removeItem(i)">
+      ❌
+    </button>
+  </div>
+
+  <!-- Add New Row -->
+  <div class="add-btn-container">
+    <button class="add-btn" type="button" (click)="addItem()">+ Add</button>
+  </div>
+
+  <!-- Summary Box -->
+  <div class="summary-box">
+    <div class="summary-row">
+      <span>Items Total:</span>
+      <strong>₹{{ itemsTotal }}</strong>
+    </div>
+
+    <div class="summary-row">
+      <span>Discount Amount:</span>
+      <input type="number" [(ngModel)]="discount" class="summary-input" placeholder="0" />
+    </div>
+
+    <div class="summary-row">
+      <span>Referral Bonus:</span>
+      <input type="number" [(ngModel)]="referralBonus" class="summary-input" placeholder="0" />
+    </div>
+
+    <div class="summary-row final">
+      <span>Final Amount:</span>
+      <strong>₹{{ finalAmount }}</strong>
+    </div>
+  </div>
+
+  <!-- Save Button -->
+  <div class="actions">
+    <button class="save-btn" (click)="saveInvoice()">
+      💾 Save Invoice
+    </button>
+  </div>
+</div>

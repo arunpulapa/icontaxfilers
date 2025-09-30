@@ -1,11 +1,82 @@
-<mat-card>
-  <h2>Manage Members</h2>
+<mat-card class="manage-teams-card">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <h2 class="title">Manage Teams</h2>
 
-  <mat-selection-list [(ngModel)]="selectedMembers">
-    <mat-list-option *ngFor="let u of users" [value]="u.id">
-      {{ u.name }} ({{ u.email }})
-    </mat-list-option>
-  </mat-selection-list>
+    <div class="toolbar-actions">
+      
 
-  <button mat-flat-button color="primary" (click)="save()">Save Members</button>
+     <button class="modern-btn" (click)="addTeam()">
+  <mat-icon class="btn-icon">group_add</mat-icon>
+  <span>Add Team</span>
+</button>
+
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 striped-table">
+
+      <!-- Team -->
+      <ng-container matColumnDef="team">
+        <th mat-header-cell *matHeaderCellDef>Team</th>
+        <td mat-cell *matCellDef="let row">{{ row.team }}</td>
+      </ng-container>
+
+      <!-- Lead Name -->
+      <ng-container matColumnDef="leadName">
+        <th mat-header-cell *matHeaderCellDef>Lead Name</th>
+        <td mat-cell *matCellDef="let row">{{ row.leadName }}</td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+      </ng-container>
+
+      <!-- Phone -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let row">{{ row.phone }}</td>
+      </ng-container>
+
+      <!-- Desk Number -->
+      <ng-container matColumnDef="deskNumber">
+        <th mat-header-cell *matHeaderCellDef>Desk #</th>
+        <td mat-cell *matCellDef="let row">{{ row.deskNumber }}</td>
+      </ng-container>
+
+      <!-- WhatsApp -->
+      <ng-container matColumnDef="whatsapp">
+        <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
+        <td mat-cell *matCellDef="let row">{{ row.whatsapp }}</td>
+      </ng-container>
+
+      <!-- Copy Paste -->
+      <ng-container matColumnDef="copyPaste">
+        <th mat-header-cell *matHeaderCellDef>Copy Paste</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-slide-toggle color="primary" [(ngModel)]="row.copyPaste"></mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button mat-icon-button color="primary" matTooltip="Edit" (click)="editTeam(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteTeam(row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="row-hover"></tr>
+    </table>
+  </div>
 </mat-card>

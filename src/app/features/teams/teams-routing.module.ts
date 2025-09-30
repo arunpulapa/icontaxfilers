@@ -5,7 +5,7 @@ import { TeamListComponent } from './components/team-list/team-list.component';
 import { TeamFormComponent } from './components/team-form/team-form.component';
 
 const routes: Routes = [
-  { path: '', component: TeamListComponent },
+  { path: '', component: TeamsComponent },
   { path: 'new', component: TeamFormComponent },
   { path: ':id/edit', component: TeamFormComponent },
   { path: ':id/members', component: TeamsComponent }

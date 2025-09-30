@@ -1,0 +1,56 @@
+/* leads.component.css */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.import-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filter-field {
+  width: 220px;
+}
+
+.search-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.leads-table {
+  width: 100%;
+  overflow: auto;
+}
+
+/* tighten header spacing to look like the screenshot */
+.mat-header-cell, .mat-cell {
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+/* actions column smaller */
+td.mat-cell .mat-icon-button {
+  margin-right: 4px;
+}
+td.mat-cell .mat-icon-button:last-child {
+  margin-right: 0;
+}

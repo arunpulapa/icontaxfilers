@@ -12,7 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
-
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,9 @@ import { MatListModule } from '@angular/material/list';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatOptionModule,
-    MatListModule
+    MatListModule,
+    MatInputModule,
+    MatSlideToggleModule
   ]
 })
 export class TeamsModule { }

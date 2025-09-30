@@ -1,0 +1,87 @@
+.manage-teams-card {
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2e3b55;
+  margin: 0;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-field {
+  width: 280px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.striped-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.mat-header-cell {
+  font-weight: 600;
+  background: #f1f4f9;
+  color: #333;
+}
+
+.mat-cell, .mat-header-cell {
+  padding: 12px 16px;
+}
+
+.row-hover:hover {
+  background: #eef5ff;
+}
+
+.actions-cell button {
+  margin-right: 6px;
+}
+.modern-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #3f51b5, #2196f3);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+}
+
+.modern-btn:hover {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  box-shadow: 0 6px 14px rgba(33, 150, 243, 0.4);
+  transform: translateY(-2px);
+}
+
+.modern-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+}
+
+.btn-icon {
+  font-size: 20px;
+}
