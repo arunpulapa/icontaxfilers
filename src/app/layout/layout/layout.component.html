@@ -1,18 +1,24 @@
-<mat-sidenav-container class="app-sidenav-container">
-  <mat-sidenav #sidenav class="app-sidenav" mode="side" opened>
-    <app-sidebar (navigate)="closeIfOver()"></app-sidebar>
-  </mat-sidenav>
+<ng-container *ngIf="showLayout; else loginOnly">
+  <mat-sidenav-container class="app-sidenav-container">
+    <mat-sidenav #sidenav class="app-sidenav" mode="side" opened>
+      <app-sidebar (navigate)="closeIfOver()"></app-sidebar>
+    </mat-sidenav>
 
-  <mat-sidenav-content class="app-sidenav-content">
-    <app-topbar (menuClick)="toggleSidenav()"></app-topbar>
+    <mat-sidenav-content class="app-sidenav-content">
+      <app-topbar (menuClick)="toggleSidenav()"></app-topbar>
 
-    <main class="app-content" (click)="closeIfOver()">
-      <router-outlet></router-outlet>
-    </main>
+      <main class="app-content" (click)="closeIfOver()">
+        <router-outlet></router-outlet>
+      </main>
 
-    <!-- optional footer -->
-    <footer class="app-footer">
-    © {{ year }} Icon Tax — All rights reserved 
-    </footer>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+      <footer class="app-footer">
+        © {{ year }} Icon Tax — All rights reserved
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</ng-container>
+
+<ng-template #loginOnly>
+  <!-- Render only the login page -->
+  <router-outlet></router-outlet>
+</ng-template>

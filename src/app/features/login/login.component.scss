@@ -1,0 +1,31 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  color: #333;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: #2575fc;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .error-message {
+    color: red;
+    margin-bottom: 1rem;
+  }
+}
