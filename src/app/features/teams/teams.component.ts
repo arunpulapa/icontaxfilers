@@ -1,26 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-
-// import { Team } from '../../core/models/team.model';
-import { TeamService } from './services/team.service';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '../../../environment/environment';
 
 export interface Team {
-  team: string;
-  leadName: string;
-  email: string;
-  phone: string;
-  deskNumber: string;
-  whatsapp: string;
+  teamName: string;
+  managerName: string;
+  managerEmail: string;
+  managerPhone: string;
+  managerDeskNumber: string | null;
+  managerWhatsApp: string;
   copyPaste: boolean;
+  memberCount: number;
 }
-
-const SAMPLE_TEAMS: Team[] = [
-  { team: 'COMMANDERS', leadName: 'Masters', email: 'commanders@gtaxfile.com', phone: '9999999999', deskNumber: '9999999999', whatsapp: '9999999999', copyPaste: false },
-  { team: 'TERMINATORS', leadName: 'Masters', email: 'terminators@gtaxfile.com', phone: '9999999999', deskNumber: '9999999999', whatsapp: '9999999999', copyPaste: true },
-  { team: 'MONSTERS', leadName: 'Masters', email: 'monsters@gtaxfile.com', phone: '9999999999', deskNumber: '9999999999', whatsapp: '9999999999', copyPaste: false },
-  { team: 'PHOENIX', leadName: 'Prashanth Kajra', email: 'kajra@gtaxfile.com', phone: '870012234', deskNumber: '870012234', whatsapp: '8970012234', copyPaste: true },
-  { team: 'FIGHTERS', leadName: 'Akhil Raj', email: 'akhilraj@gtaxfile.com', phone: '987654356', deskNumber: '', whatsapp: '', copyPaste: false }
-];
 
 @Component({
   selector: 'app-teams',
@@ -28,27 +23,183 @@ const SAMPLE_TEAMS: Team[] = [
   styleUrls: ['./teams.component.scss']
 })
 export class TeamsComponent implements OnInit {
+  @ViewChild('addTeamDialog') addTeamDialog!: TemplateRef<any>;
+  @ViewChild('renameTeamDialog') renameTeamDialog!: TemplateRef<any>;
+
+  displayedColumns: string[] = [
+    'teamName',
+    'managerName',
+    'managerEmail',
+    'managerPhone',
+    'managerDeskNumber',
+    'managerWhatsApp',
+    'memberCount',
+    'copyPaste',
+    'actions'
+  ];
+
+  dataSource = new MatTableDataSource<Team>([]);
+  teamForm!: FormGroup;
+  renameForm!: FormGroup;
+  selectedTeam: Team | null = null;
+
+  private apiUrl = `${environment.apiBaseUrl}/ManageTeams`;
+
+  constructor(
+    private dialog: MatDialog,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {}
+
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    // Forms
+    this.teamForm = this.fb.group({
+      teamName: ['', Validators.required],
+      managerId: ['', Validators.required]
+    });
+
+    this.renameForm = this.fb.group({
+      newTeamName: ['', Validators.required]
+    });
+
+    // Load data
+    this.loadTeams();
+
+    // Custom filter predicate
+    this.dataSource.filterPredicate = (data: Team, filter: string) => {
+      const search = filter.trim().toLowerCase();
+      return (
+        data.teamName?.toLowerCase().includes(search) ||
+        data.managerName?.toLowerCase().includes(search) ||
+        data.managerEmail?.toLowerCase().includes(search) ||
+        data.managerPhone?.toLowerCase().includes(search) ||
+        data.managerDeskNumber?.toLowerCase().includes(search) ||
+        data.managerWhatsApp?.toLowerCase().includes(search)
+      );
+    };
   }
- displayedColumns: string[] = ['team', 'leadName', 'email', 'phone', 'deskNumber', 'whatsapp', 'copyPaste', 'actions'];
-  dataSource = new MatTableDataSource<Team>(SAMPLE_TEAMS);
 
-  searchText = '';
-
-  applyFilter() {
-    this.dataSource.filter = this.searchText.trim().toLowerCase();
+  // 🔍 Search
+  applyFilter(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = input.trim().toLowerCase();
   }
 
-  editTeam(team: Team) {
-    console.log('Edit Team', team);
+  // ➕ Open Add Dialog
+  openAddTeamDialog(): void {
+    this.dialog.open(this.addTeamDialog, {
+      width: '400px',
+      disableClose: true
+    });
   }
 
-  deleteTeam(team: Team) {
-    console.log('Delete Team', team);
+  // ✅ Add Team
+  createTeam(): void {
+    if (this.teamForm.invalid) {
+      this.teamForm.markAllAsTouched();
+      this.showBanner('⚠️ Please fill out all required fields.', 'Close');
+      return;
+    }
+
+    const payload = this.teamForm.value;
+
+    this.http.post(`${this.apiUrl}/create`, payload).subscribe({
+      next: () => {
+        this.showBanner('✅ Team created successfully!', 'OK');
+        this.dialog.closeAll();
+        this.teamForm.reset();
+        this.loadTeams();
+      },
+      error: (err) => {
+        console.error('Error creating team:', err);
+        this.showBanner('❌ Failed to create team.', 'Dismiss', true);
+      }
+    });
   }
 
-  addTeam() {
-    console.log('Add new team');
+  // 📋 Load Teams
+  loadTeams(): void {
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.map(team => ({
+          teamName: team.teamName,
+          managerName: team.managerName,
+          managerEmail: team.managerEmail,
+          managerPhone: team.managerPhone,
+          managerDeskNumber: team.managerDeskNumber,
+          managerWhatsApp: team.managerWhatsApp,
+          copyPaste: team.copyPaste,
+          memberCount: team.memberCount
+        }));
+      },
+      error: (err) => {
+        console.error('❌ Error loading teams:', err);
+        this.showBanner('⚠️ Failed to load team data.', 'Retry');
+      }
+    });
+  }
+
+  // ✏️ Open Rename Dialog
+  openRenameDialog(team: Team): void {
+    this.selectedTeam = team;
+    this.renameForm.reset({ newTeamName: team.teamName });
+
+    this.dialog.open(this.renameTeamDialog, {
+      width: '400px',
+      disableClose: true
+    });
+  }
+
+  // ✅ Rename Team
+  renameTeam(): void {
+    if (!this.selectedTeam || this.renameForm.invalid) {
+      this.showBanner('⚠️ Please enter a valid new name.', 'Close');
+      return;
+    }
+
+    const payload = {
+      oldTeamName: this.selectedTeam.teamName,
+      newTeamName: this.renameForm.value.newTeamName.trim()
+    };
+
+    this.http.post(`${this.apiUrl}/rename`, payload).subscribe({
+      next: () => {
+        this.showBanner(`✅ Team renamed to "${payload.newTeamName}"`, 'OK');
+        this.dialog.closeAll();
+        this.loadTeams();
+      },
+      error: (err) => {
+        console.error('❌ Error renaming team:', err);
+        this.showBanner('❌ Failed to rename team.', 'Dismiss', true);
+      }
+    });
+  }
+
+  // 🗑️ Delete Team
+  deleteTeam(team: Team): void {
+    const confirmDelete = confirm(`Are you sure you want to delete team: ${team.teamName}?`);
+    if (!confirmDelete) return;
+
+    this.http.delete(`${this.apiUrl}/${encodeURIComponent(team.teamName)}`).subscribe({
+      next: () => {
+        this.showBanner('🗑️ Team deleted successfully.', 'OK');
+        this.dataSource.data = this.dataSource.data.filter(t => t !== team);
+      },
+      error: (err) => {
+        console.error('Error deleting team:', err);
+        this.showBanner('❌ Failed to delete team.', 'Dismiss', true);
+      }
+    });
+  }
+
+  // 🌟 Snackbar (banner) utility
+  private showBanner(message: string, action: string, isError: boolean = false): void {
+    this.snackBar.open(message, action, {
+      duration: 4000,
+      panelClass: isError ? ['banner-error'] : ['banner-success'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
   }
 }

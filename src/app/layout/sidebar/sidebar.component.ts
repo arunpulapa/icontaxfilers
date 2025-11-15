@@ -27,6 +27,7 @@ menu: MenuItem[] = [
   { title: 'Leads', icon: 'feed', path: '/leads' },
   { title: 'Referrals', icon: 'share', path: '/referrals' },
   { title: 'Manage Teams', icon: 'groups', path: '/teams' },
+  { title: 'Manage Users', icon: 'groups', path: '/users' },
 ];
 
 

@@ -14,6 +14,11 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HttpClientModule } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -23,6 +28,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
     TeamsRoutingModule,
     MatCardModule,
     MatIconModule,
@@ -33,7 +39,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatOptionModule,
     MatListModule,
     MatInputModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSlideToggleModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatSnackBarModule
   ]
 })
 export class TeamsModule { }

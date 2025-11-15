@@ -34,7 +34,6 @@ export class TeamFormComponent {
       leadId: ['', Validators.required],
       status: ['active', Validators.required]
     });
-
     this.teamId = this.route.snapshot.paramMap.get('id') || '';
     if (this.teamId) {
       const team = this.teamService.getTeam(this.teamId);
@@ -47,7 +46,6 @@ export class TeamFormComponent {
 
   onSubmit() {
     if (this.form.invalid) return;
-
     const team: Team = {
       id: this.teamId || Date.now().toString(),
       name: this.form.value.name,
@@ -62,7 +60,6 @@ export class TeamFormComponent {
     } else {
       this.teamService.addTeam(team);
     }
-
     this.router.navigate(['/teams']);
   }
 }

@@ -2,81 +2,134 @@
   <!-- Toolbar -->
   <div class="toolbar">
     <h2 class="title">Manage Teams</h2>
-
     <div class="toolbar-actions">
-      
-
-     <button class="modern-btn" (click)="addTeam()">
-  <mat-icon class="btn-icon">group_add</mat-icon>
-  <span>Add Team</span>
-</button>
-
+      <button class="modern-btn" (click)="openAddTeamDialog()">
+        <mat-icon class="btn-icon">group_add</mat-icon>
+        <span>Add Team</span>
+      </button>
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="table-container">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 striped-table">
-
-      <!-- Team -->
-      <ng-container matColumnDef="team">
-        <th mat-header-cell *matHeaderCellDef>Team</th>
-        <td mat-cell *matCellDef="let row">{{ row.team }}</td>
-      </ng-container>
-
-      <!-- Lead Name -->
-      <ng-container matColumnDef="leadName">
-        <th mat-header-cell *matHeaderCellDef>Lead Name</th>
-        <td mat-cell *matCellDef="let row">{{ row.leadName }}</td>
-      </ng-container>
-
-      <!-- Email -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
-      </ng-container>
-
-      <!-- Phone -->
-      <ng-container matColumnDef="phone">
-        <th mat-header-cell *matHeaderCellDef>Phone</th>
-        <td mat-cell *matCellDef="let row">{{ row.phone }}</td>
-      </ng-container>
-
-      <!-- Desk Number -->
-      <ng-container matColumnDef="deskNumber">
-        <th mat-header-cell *matHeaderCellDef>Desk #</th>
-        <td mat-cell *matCellDef="let row">{{ row.deskNumber }}</td>
-      </ng-container>
-
-      <!-- WhatsApp -->
-      <ng-container matColumnDef="whatsapp">
-        <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
-        <td mat-cell *matCellDef="let row">{{ row.whatsapp }}</td>
-      </ng-container>
-
-      <!-- Copy Paste -->
-      <ng-container matColumnDef="copyPaste">
-        <th mat-header-cell *matHeaderCellDef>Copy Paste</th>
-        <td mat-cell *matCellDef="let row">
-          <mat-slide-toggle color="primary" [(ngModel)]="row.copyPaste"></mat-slide-toggle>
-        </td>
-      </ng-container>
-
-      <!-- Actions -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let row" class="actions-cell">
-          <button mat-icon-button color="primary" matTooltip="Edit" (click)="editTeam(row)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteTeam(row)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="row-hover"></tr>
-    </table>
+  <!-- 🔍 Search -->
+  <div class="search-box">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Search Teams</mat-label>
+      <input
+        matInput
+        type="text"
+        (keyup)="applyFilter($event)"
+        placeholder="Search by team, manager, email, etc..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
   </div>
+
+  <!-- 📋 Table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 striped-table">
+
+    <!-- Team Name -->
+    <ng-container matColumnDef="teamName">
+      <th mat-header-cell *matHeaderCellDef>Team</th>
+      <td mat-cell *matCellDef="let row">{{ row.teamName }}</td>
+    </ng-container>
+
+    <!-- Manager -->
+    <ng-container matColumnDef="managerName">
+      <th mat-header-cell *matHeaderCellDef>Manager</th>
+      <td mat-cell *matCellDef="let row">{{ row.managerName }}</td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="managerEmail">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let row">{{ row.managerEmail }}</td>
+    </ng-container>
+
+    <!-- Phone -->
+    <ng-container matColumnDef="managerPhone">
+      <th mat-header-cell *matHeaderCellDef>Phone</th>
+      <td mat-cell *matCellDef="let row">{{ row.managerPhone }}</td>
+    </ng-container>
+
+    <!-- Desk Number -->
+    <ng-container matColumnDef="managerDeskNumber">
+      <th mat-header-cell *matHeaderCellDef>Desk #</th>
+      <td mat-cell *matCellDef="let row">{{ row.managerDeskNumber }}</td>
+    </ng-container>
+
+    <!-- WhatsApp -->
+    <ng-container matColumnDef="managerWhatsApp">
+      <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
+      <td mat-cell *matCellDef="let row">{{ row.managerWhatsApp }}</td>
+    </ng-container>
+
+    <!-- Members -->
+    <ng-container matColumnDef="memberCount">
+      <th mat-header-cell *matHeaderCellDef>Members</th>
+      <td mat-cell *matCellDef="let row">{{ row.memberCount }}</td>
+    </ng-container>
+
+    <!-- Copy Paste -->
+    <ng-container matColumnDef="copyPaste">
+      <th mat-header-cell *matHeaderCellDef>Copy Paste</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-slide-toggle color="primary" [(ngModel)]="row.copyPaste"></mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let row" class="actions-cell">
+        <button mat-icon-button color="primary" matTooltip="Rename" (click)="openRenameDialog(row)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteTeam(row)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
 </mat-card>
+
+<!-- ➕ Add Team Dialog -->
+<ng-template #addTeamDialog>
+  <h2 mat-dialog-title>Add Team</h2>
+  <mat-dialog-content>
+    <form [formGroup]="teamForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Team Name</mat-label>
+        <input matInput formControlName="teamName" placeholder="Enter team name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Manager ID</mat-label>
+        <input matInput formControlName="managerId" placeholder="Enter manager ID" />
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" (click)="createTeam()">Save</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- ✏️ Rename Team Dialog -->
+<ng-template #renameTeamDialog>
+  <h2 mat-dialog-title>Rename Team</h2>
+  <mat-dialog-content>
+    <form [formGroup]="renameForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>New Team Name</mat-label>
+        <input matInput formControlName="newTeamName" placeholder="Enter new team name" />
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" (click)="renameTeam()">Save</button>
+  </mat-dialog-actions>
+</ng-template>

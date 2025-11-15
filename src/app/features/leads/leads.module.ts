@@ -14,6 +14,11 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule } from '@angular/common/http';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+
 
 @NgModule({
   declarations: [
@@ -32,7 +37,10 @@ import { HttpClientModule } from '@angular/common/http';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ]
 })
 export class LeadsModule { }

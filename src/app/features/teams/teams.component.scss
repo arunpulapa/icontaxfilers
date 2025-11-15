@@ -85,3 +85,70 @@
 .btn-icon {
   font-size: 20px;
 }
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modern-btn {
+  display: flex;
+  align-items: center;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.modern-btn:hover {
+  background-color: #1565c0;
+}
+
+.btn-icon {
+  margin-right: 6px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.search-box {
+  margin: 12px 0;
+}
+
+.table-container {
+  overflow: auto;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
