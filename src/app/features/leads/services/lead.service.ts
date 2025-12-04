@@ -1,45 +1,81 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environment/environment';
-
-export interface Lead {
-  name: string;
-  email: string;
-  phone1: string;
-  phone2?: string;
-  status: string;
-  team: string;
-}
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { AuthService } from "src/app/auth/auth.service";
+import { environment } from "src/environment/environment";
+import { Lead } from "../leads.component";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LeadService {
-
   private baseUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  // ✅ Get leads
-  getLeads(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/Clients/Get-uploaded-clients`);
+  private authHeaders() {
+    return {
+      headers: this.authService.getAuthHeaders()
+    };
   }
 
-  // ✅ Get statuses
+  getLeads(): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/Clients/Get-uploaded-clients`,
+      this.authHeaders()
+    );
+  }
+
   getStatuses(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/WorkFlow/GetStatus`);
+    return this.http.get<string[]>(
+      `${this.baseUrl}/WorkFlow/GetStatus`,
+      this.authHeaders()
+    );
   }
 
-  // ✅ Get roles/teams
   getRoles(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/WorkFlow/GetRoles`);
+    return this.http.get<string[]>(
+      `${this.baseUrl}/WorkFlow/GetRoles`,
+      this.authHeaders()
+    );
   }
 
-  // ✅ Upload leads file
+  // ✅ JSON import endpoint
+  importParsed(leads: any[]): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/Clients/ImportParsed`,
+      leads,
+      this.authHeaders()
+    );
+  }
+
+  // ✅ Excel upload fallback endpoint
+ uploadExcel(file: File): Observable<any> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+
+    // Start from auth headers and drop any Content-Type,
+    // so the browser can set multipart/form-data correctly.
+    let headers = this.authService.getAuthHeaders();
+    if (headers instanceof HttpHeaders) {
+      headers = headers.delete('Content-Type');
+    }
+
+    return this.http.post<any>(
+      `${this.baseUrl}/Clients/upload-excel`,
+      form,
+      { headers }
+    );
+  }
+
+  /** Optional existing API, keep if you still use it somewhere */
   uploadLeads(file: File): Observable<Lead[]> {
     const form = new FormData();
     form.append('file', file, file.name);
-    return this.http.post<Lead[]>(`${this.baseUrl}/Clients/UploadLeads`, form);
+    return this.http.post<Lead[]>(
+      `${this.baseUrl}/Clients/UploadLeads`,
+      form,
+    );
   }
+
 }

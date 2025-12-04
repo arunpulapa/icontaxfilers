@@ -1,0 +1,259 @@
+.client-search-page {
+  padding: 24px;
+  background: #f3f4f6;
+  min-height: 100%;
+  font-size: 15px; /* 🔹 base font slightly bigger */
+}
+
+/* Top header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: radial-gradient(circle at top, #2563eb, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f9fafb;
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.6rem;       /* 🔹 was 1.4rem */
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;         /* 🔹 was 0.9rem */
+}
+
+/* results badge */
+.stats .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8;
+  font-size: 0.9rem;       /* 🔹 a bit bigger */
+  font-weight: 500;
+}
+
+/* Card */
+.client-search-card {
+  padding: 20px 22px 24px;
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+}
+
+/* Search bar */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.search-field {
+  flex: 1 1 260px;
+}
+
+.status-field {
+  width: 180px;
+}
+
+.search-btn,
+.clear-btn {
+  height: 42px;
+  font-size: 0.95rem;
+}
+
+.search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+}
+
+.helper-text {
+  font-size: 0.9rem;       /* 🔹 was 0.8rem */
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.results {
+  margin-top: 4px;
+}
+
+/* Table */
+.clients-table {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.clients-table th {
+  font-weight: 600;
+  font-size: 14px;      /* 🔹 was 0.8rem */
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+.clients-table td {
+  font-size: 13px;         /* 🔹 was 0.9rem */
+}
+
+.data-row:hover {
+  background: #f3f4ff;
+}
+
+/* client cell with avatar */
+.client-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #e0ecff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.client-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-name {
+  font-weight: 500;
+  color: #111827;
+  font-size: 1rem;
+}
+
+.client-id {
+  font-size: 0.85rem;      /* 🔹 was 0.75rem */
+  color: #9ca3af;
+}
+
+/* status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;      /* 🔹 was 0.75rem */
+}
+
+.status-pill.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.status-pill.inactive {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+/* actions */
+.actions-cell {
+  text-align: right;
+}
+
+.small-btn {
+  padding: 0 14px;
+  height: 34px;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Empty state */
+.empty-state {
+  margin-top: 28px;
+  padding: 20px 12px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.empty-state h3 {
+  margin: 10px 0 4px;
+  font-size: 1.1rem;       /* 🔹 bigger */
+  color: #111827;
+}
+
+.empty-state p {
+  font-size: 0.95rem;
+}
+
+.empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: #e5edff;
+  color: #1d4ed8;
+}
+
+.empty-icon mat-icon {
+  font-size: 32px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .client-search-page {
+    padding: 16px;
+  }
+
+  .client-search-card {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .actions-cell {
+    text-align: left;
+  }
+}

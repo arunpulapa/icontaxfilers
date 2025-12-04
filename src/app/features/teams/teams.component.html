@@ -1,18 +1,25 @@
 <mat-card class="manage-teams-card">
   <!-- Toolbar -->
   <div class="toolbar">
-    <h2 class="title">Manage Teams</h2>
-    <div class="toolbar-actions">
-      <button class="modern-btn" (click)="openAddTeamDialog()">
-        <mat-icon class="btn-icon">group_add</mat-icon>
-        <span>Add Team</span>
-      </button>
+    <div class="title-block">
+      <h2 class="title">Manage Teams</h2>
+      <p class="subtitle">Create, update and monitor your internal teams.</p>
     </div>
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="add-btn"
+      (click)="openAddTeamDialog()"
+    >
+      <mat-icon>group_add</mat-icon>
+      <span>Add Team</span>
+    </button>
   </div>
 
   <!-- 🔍 Search -->
   <div class="search-box">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search Teams</mat-label>
       <input
         matInput
@@ -25,80 +32,104 @@
   </div>
 
   <!-- 📋 Table -->
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 striped-table">
+  <div class="table-wrapper">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      class="mat-elevation-z2 teams-table striped-table"
+    >
+      <!-- Team Name -->
+      <ng-container matColumnDef="teamName">
+        <th mat-header-cell *matHeaderCellDef>Team</th>
+        <td mat-cell *matCellDef="let row">{{ row.teamName }}</td>
+      </ng-container>
 
-    <!-- Team Name -->
-    <ng-container matColumnDef="teamName">
-      <th mat-header-cell *matHeaderCellDef>Team</th>
-      <td mat-cell *matCellDef="let row">{{ row.teamName }}</td>
-    </ng-container>
+      <!-- Manager -->
+      <ng-container matColumnDef="managerName">
+        <th mat-header-cell *matHeaderCellDef>Manager</th>
+        <td mat-cell *matCellDef="let row">{{ row.managerName }}</td>
+      </ng-container>
 
-    <!-- Manager -->
-    <ng-container matColumnDef="managerName">
-      <th mat-header-cell *matHeaderCellDef>Manager</th>
-      <td mat-cell *matCellDef="let row">{{ row.managerName }}</td>
-    </ng-container>
+      <!-- Email -->
+      <ng-container matColumnDef="managerEmail">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let row">{{ row.managerEmail }}</td>
+      </ng-container>
 
-    <!-- Email -->
-    <ng-container matColumnDef="managerEmail">
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-      <td mat-cell *matCellDef="let row">{{ row.managerEmail }}</td>
-    </ng-container>
+      <!-- Phone -->
+      <ng-container matColumnDef="managerPhone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let row">{{ row.managerPhone }}</td>
+      </ng-container>
 
-    <!-- Phone -->
-    <ng-container matColumnDef="managerPhone">
-      <th mat-header-cell *matHeaderCellDef>Phone</th>
-      <td mat-cell *matCellDef="let row">{{ row.managerPhone }}</td>
-    </ng-container>
+      <!-- Desk Number -->
+      <ng-container matColumnDef="managerDeskNumber">
+        <th mat-header-cell *matHeaderCellDef>Desk #</th>
+        <td mat-cell *matCellDef="let row">{{ row.managerDeskNumber }}</td>
+      </ng-container>
 
-    <!-- Desk Number -->
-    <ng-container matColumnDef="managerDeskNumber">
-      <th mat-header-cell *matHeaderCellDef>Desk #</th>
-      <td mat-cell *matCellDef="let row">{{ row.managerDeskNumber }}</td>
-    </ng-container>
+      <!-- WhatsApp -->
+      <ng-container matColumnDef="managerWhatsApp">
+        <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
+        <td mat-cell *matCellDef="let row">{{ row.managerWhatsApp }}</td>
+      </ng-container>
 
-    <!-- WhatsApp -->
-    <ng-container matColumnDef="managerWhatsApp">
-      <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
-      <td mat-cell *matCellDef="let row">{{ row.managerWhatsApp }}</td>
-    </ng-container>
+      <!-- Members -->
+      <ng-container matColumnDef="memberCount">
+        <th mat-header-cell *matHeaderCellDef>Members</th>
+        <td mat-cell *matCellDef="let row">{{ row.memberCount }}</td>
+      </ng-container>
 
-    <!-- Members -->
-    <ng-container matColumnDef="memberCount">
-      <th mat-header-cell *matHeaderCellDef>Members</th>
-      <td mat-cell *matCellDef="let row">{{ row.memberCount }}</td>
-    </ng-container>
+      <!-- Copy Paste -->
+      <ng-container matColumnDef="copyPaste">
+        <th mat-header-cell *matHeaderCellDef>Copy Paste</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-slide-toggle
+            color="primary"
+            [(ngModel)]="row.copyPaste"
+          ></mat-slide-toggle>
+        </td>
+      </ng-container>
 
-    <!-- Copy Paste -->
-    <ng-container matColumnDef="copyPaste">
-      <th mat-header-cell *matHeaderCellDef>Copy Paste</th>
-      <td mat-cell *matCellDef="let row">
-        <mat-slide-toggle color="primary" [(ngModel)]="row.copyPaste"></mat-slide-toggle>
-      </td>
-    </ng-container>
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button
+            mat-icon-button
+            color="primary"
+            matTooltip="Rename"
+            (click)="openRenameDialog(row)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            matTooltip="Delete"
+            (click)="deleteTeam(row)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-    <!-- Actions -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let row" class="actions-cell">
-        <button mat-icon-button color="primary" matTooltip="Rename" (click)="openRenameDialog(row)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteTeam(row)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="row-hover"
+      ></tr>
+    </table>
+  </div>
 </mat-card>
 
 <!-- ➕ Add Team Dialog -->
 <ng-template #addTeamDialog>
-  <h2 mat-dialog-title>Add Team</h2>
-  <mat-dialog-content>
+  <div class="dialog-container">
+    <h2 class="dialog-title">Add Team</h2>
     <form [formGroup]="teamForm" class="dialog-form">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Team Name</mat-label>
@@ -110,26 +141,30 @@
         <input matInput formControlName="managerId" placeholder="Enter manager ID" />
       </mat-form-field>
     </form>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-raised-button color="primary" (click)="createTeam()">Save</button>
-  </mat-dialog-actions>
+    <div class="dialog-actions">
+      <button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" (click)="createTeam()">Save</button>
+    </div>
+  </div>
 </ng-template>
 
 <!-- ✏️ Rename Team Dialog -->
 <ng-template #renameTeamDialog>
-  <h2 mat-dialog-title>Rename Team</h2>
-  <mat-dialog-content>
+  <div class="dialog-container">
+    <h2 class="dialog-title">Rename Team</h2>
     <form [formGroup]="renameForm" class="dialog-form">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>New Team Name</mat-label>
-        <input matInput formControlName="newTeamName" placeholder="Enter new team name" />
+        <input
+          matInput
+          formControlName="newTeamName"
+          placeholder="Enter new team name"
+        />
       </mat-form-field>
     </form>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-raised-button color="primary" (click)="renameTeam()">Save</button>
-  </mat-dialog-actions>
+    <div class="dialog-actions">
+      <button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" (click)="renameTeam()">Save</button>
+    </div>
+  </div>
 </ng-template>

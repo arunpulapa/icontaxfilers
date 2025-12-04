@@ -1,87 +1,195 @@
-<div class="page-header">
-  <h2 class="title">Leads</h2>
-  <div class="import-area">
-    <input #fileInput type="file"
-           accept=".csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-           style="display:none"
-           (change)="onFileSelected($event)">
-    <button mat-stroked-button color="primary" (click)="fileInput.click()">
-      <mat-icon>file_upload</mat-icon> Import Leads
-    </button>
+<mat-card class="leads-card">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="title-block">
+      <h1 class="title" style="font-size: 18px;">Leads</h1>
+      <p class="subtitle">Import, filter and assign leads to your teams.</p>
+    </div>
+
+    <div class="import-area">
+      <input
+        #fileInput
+        type="file"
+        accept=".csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        style="display:none"
+        (change)="onFileSelected($event)"
+      />
+      <button
+        mat-flat-button
+        color="primary"
+        class="import-btn"
+        (click)="fileInput.click()"
+      >
+        <mat-icon>file_upload</mat-icon>
+        <span>Import Leads</span>
+      </button>
+    </div>
   </div>
-</div>
 
-<!-- Filters -->
-<div class="filters">
-  <mat-form-field appearance="outline" class="filter-field">
-    <mat-label>Teams</mat-label>
-    <mat-select [(value)]="filterValues.team" (selectionChange)="applyFilter()">
-      <mat-option *ngFor="let t of teams" [value]="t">{{ t }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <!-- Filters & total -->
+  <div class="filters-row">
+    <div class="filters">
+      <mat-form-field appearance="outline" class="assign-field">
+        <mat-label>Assign team</mat-label>
+        <mat-select [(value)]="selectedBulkTeam">
+          <mat-option value="">Select team</mat-option>
+          <mat-option value="Hunters">Hunters</mat-option>
+          <mat-option value="fighters">fighters</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-  <mat-form-field appearance="outline" class="filter-field">
-    <mat-label>Status</mat-label>
-    <mat-select [(value)]="filterValues.status" (selectionChange)="applyFilter()">
-      <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+      <button
+        mat-flat-button
+        color="primary"
+        class="assign-btn"
+        (click)="assignSelectedTeam()"
+        [disabled]="!selection.hasValue() || !selectedBulkTeam"
+      >
+        <mat-icon>group_add</mat-icon>
+        <span>Assign Selected</span>
+      </button>
 
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Search leads</mat-label>
-    <input matInput [(ngModel)]="filterValues.search" (ngModelChange)="searchSubject.next($event)" />
-    <button mat-icon-button matSuffix *ngIf="filterValues.search"
-            (click)="filterValues.search=''; searchSubject.next('')">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-</div>
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select
+          [(value)]="filterValues.status"
+          (selectionChange)="applyFilter()"
+        >
+          <mat-option *ngFor="let s of statuses" [value]="s">
+            {{ s }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-<!-- Table -->
-<div class="table-container">
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 leads-table">
-    <!-- Checkbox -->
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox
-          (change)="$event ? masterToggle() : null"
-          [checked]="isAllSelected()"
-          [indeterminate]="selection.hasValue() && !isAllSelected()"
-          [aria-label]="checkboxLabel()"></mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <mat-checkbox
-          (click)="$event.stopPropagation()"
-          (change)="$event ? selection.toggle(row) : null"
-          [checked]="selection.isSelected(row)"
-          [aria-label]="checkboxLabel(row)"></mat-checkbox>
-      </td>
-    </ng-container>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search leads</mat-label>
+        <input
+          matInput
+          [(ngModel)]="filterValues.search"
+          (ngModelChange)="searchSubject.next($event)"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          *ngIf="filterValues.search"
+          (click)="filterValues.search=''; searchSubject.next('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
 
-    <!-- Columns -->
-    <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef>Name</th><td mat-cell *matCellDef="let row">{{ row.name }}</td></ng-container>
-    <ng-container matColumnDef="email"><th mat-header-cell *matHeaderCellDef>Email</th><td mat-cell *matCellDef="let row">{{ row.email }}</td></ng-container>
-    <ng-container matColumnDef="phone1"><th mat-header-cell *matHeaderCellDef>Phone 1</th><td mat-cell *matCellDef="let row">{{ row.phone1 }}</td></ng-container>
-    <ng-container matColumnDef="phone2"><th mat-header-cell *matHeaderCellDef>Phone 2</th><td mat-cell *matCellDef="let row">{{ row.phone2 }}</td></ng-container>
-    <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>Status</th><td mat-cell *matCellDef="let row">{{ row.status }}</td></ng-container>
-    <ng-container matColumnDef="team"><th mat-header-cell *matHeaderCellDef>Team</th><td mat-cell *matCellDef="let row">{{ row.team }}</td></ng-container>
+    <div class="total-count" *ngIf="total !== null">
+      Total: <span>{{ total }}</span>
+    </div>
+  </div>
 
-    <!-- Actions -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-icon-button color="primary" (click)="edit(row)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button color="accent" (click)="assign(row)" matTooltip="Assign Caller"><mat-icon>person</mat-icon></button>
-        <button mat-icon-button color="warn" (click)="remove(row)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
-      </td>
-    </ng-container>
+  <!-- Table -->
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 leads-table">
+      <!-- Checkbox -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-</div>
+      <!-- Columns -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+      </ng-container>
 
-<!-- 🔄 Loader Spinner -->
-<div class="loading-overlay" *ngIf="loading">
-  <mat-spinner diameter="60"></mat-spinner>
-</div>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone1">
+        <th mat-header-cell *matHeaderCellDef>Phone 1</th>
+        <td mat-cell *matCellDef="let row">{{ row.phone1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone2">
+        <th mat-header-cell *matHeaderCellDef>Phone 2</th>
+        <td mat-cell *matCellDef="let row">{{ row.phone2 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span
+            class="status-pill"
+            [ngClass]="{
+              'status-new': row.status === 'New',
+              'status-contacted': row.status === 'Contacted',
+              'status-converted': row.status === 'Converted',
+              'status-closed': row.status === 'Closed'
+            }"
+          >
+            {{ row.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="team">
+        <th mat-header-cell *matHeaderCellDef>Team</th>
+        <td mat-cell *matCellDef="let row">{{ row.team }}</td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="edit(row)"
+            matTooltip="Edit"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="assign(row)"
+            matTooltip="Assign Caller"
+          >
+            <mat-icon>person</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="remove(row)"
+            matTooltip="Delete"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <!-- 🔄 Loader Spinner -->
+  <div class="loading-overlay" *ngIf="loading">
+    <mat-spinner diameter="60"></mat-spinner>
+  </div>
+</mat-card>

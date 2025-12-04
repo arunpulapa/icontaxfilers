@@ -1,0 +1,198 @@
+<div class="docs-page">
+  <div class="docs-card">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="title-block">
+        <h2 class="title">Client Documents</h2>
+        <p class="subtitle">
+          Upload and manage documents for this client.
+        </p>
+      </div>
+
+      <!-- Client info / ID or "no client" warning -->
+      <ng-container *ngIf="clientId; else noClient">
+        <div class="client-info">
+          <div class="client-pill">
+            <div class="avatar-circle">👤</div>
+            <span class="client-name">
+              {{ clientName || ('Client #' + clientId) }}
+            </span>
+          </div>
+
+          <div class="doc-count" *ngIf="documents?.length">
+            <div class="icon-circle">📁</div>
+            <span>
+              {{ documents.length }} document{{ documents.length > 1 ? 's' : '' }}
+            </span>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noClient>
+        <div class="client-pill client-pill--warning">
+          <div class="avatar-circle warning">!</div>
+          <span>No client selected. Please select a client to manage documents.</span>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Upload area + document list -->
+    <div class="layout">
+      <!-- LEFT: Upload panel -->
+      <div class="upload-panel">
+        <h3 class="section-title">Upload documents</h3>
+
+        <!-- Doc type -->
+        <div class="form-field full-width">
+          <label class="field-label">Document type</label>
+          <select
+            class="field-select"
+            [(ngModel)]="documentType"
+          >
+            <option value="">Select document type</option>
+            <option *ngFor="let t of documentTypes" [value]="t">
+              {{ t }}
+            </option>
+          </select>
+          <div class="field-hint field-hint--error" *ngIf="!documentType">
+            Required
+          </div>
+        </div>
+
+        <!-- Drag & drop box -->
+        <div
+          class="drop-zone"
+          [class.drop-zone--active]="isDragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div class="drop-icon">☁️</div>
+          <p class="drop-title">Drag & drop files here</p>
+          <span class="muted">or</span>
+          <button class="btn btn-outline" (click)="fileInput.click()">
+            Choose files
+          </button>
+
+          <input
+            #fileInput
+            type="file"
+            multiple
+            (change)="onFilesSelected($event)"
+            hidden
+          />
+
+          <p class="hint">PDF, JPG, PNG, DOCX up to 10MB each.</p>
+        </div>
+
+        <!-- Selected files list -->
+        <div class="selected-files" *ngIf="selectedFiles.length">
+          <div class="files-header">
+            <span>Files to upload ({{ selectedFiles.length }})</span>
+            <button class="link-button" (click)="clearSelected()">
+              Clear all
+            </button>
+          </div>
+
+          <div class="file-pill" *ngFor="let f of selectedFiles; let i = index">
+            <div class="file-icon">📄</div>
+            <div class="file-meta">
+              <div class="name">{{ f.name }}</div>
+              <div class="size">{{ f.size | number }} bytes</div>
+            </div>
+            <button class="icon-btn" (click)="removeSelected(i)">✕</button>
+          </div>
+        </div>
+
+        <!-- Upload button -->
+        <div class="upload-actions">
+          <button
+            class="btn btn-primary upload-btn"
+            (click)="upload()"
+            [disabled]="
+              !selectedFiles.length ||
+              !documentType ||
+              !clientId ||
+              uploading
+            "
+          >
+            <span class="btn-icon">⬆️</span>
+            <span *ngIf="!uploading">Upload documents</span>
+            <span *ngIf="uploading">Uploading...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Existing documents list -->
+      <div class="list-panel">
+        <div class="list-header">
+          <h3 class="section-title">Existing documents</h3>
+
+          <div class="form-field search-field">
+            <label class="field-label">Search</label>
+            <div class="search-wrapper">
+              <input
+                type="text"
+                class="field-input"
+                [(ngModel)]="search"
+                (input)="applyFilter()"
+                placeholder="Search by name or type"
+              />
+              <button
+                class="icon-btn small"
+                *ngIf="search"
+                (click)="search=''; applyFilter()"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper" *ngIf="filteredDocuments?.length; else emptyState">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>File name</th>
+                <th>Type</th>
+                <th>Uploaded</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let d of filteredDocuments" class="table-row">
+                <td>{{ d.fileName }}</td>
+                <td>
+                  <span class="type-pill">{{ d.documentType }}</span>
+                </td>
+                <td>
+                  {{ d.uploadedAt | date: 'MM/dd/yy, HH:mm' }}
+                </td>
+                <td class="actions-cell">
+                  <button class="icon-btn" (click)="download(d)">⬇</button>
+                  <button class="icon-btn danger" (click)="delete(d)">🗑</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <div class="empty-icon">📂</div>
+            <p class="empty-title">No documents uploaded yet.</p>
+            <p class="empty-text">
+              Use the panel on the left to upload files for this client.
+            </p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Loading overlay while uploading -->
+    <div class="loading-overlay" *ngIf="uploading">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>

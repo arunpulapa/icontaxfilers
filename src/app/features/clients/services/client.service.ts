@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
 import { Client } from '../../../core/models/client.model';
 
 @Injectable({ providedIn: 'root' })
@@ -51,4 +51,23 @@ export class ClientService {
     this.clients = this.clients.filter(c => c.id !== id);
     this.clients$.next(this.clients);
   }
+
+
+
+  searchClients(searchText: string): Observable<Client[]> {
+  const t = searchText.toLowerCase().trim();
+  if (!t) return this.getClients();
+
+  return this.getClients().pipe(
+    map((clients: any[]) =>
+      clients.filter(c =>
+        c.name?.toLowerCase().includes(t) ||
+        c.email?.toLowerCase().includes(t) ||
+        c.phone?.toLowerCase().includes(t) ||
+        c.id?.toString().toLowerCase().includes(t)
+      )
+    )
+  );
+}
+
 }

@@ -1,0 +1,88 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    
+    <!-- Left Branding Section -->
+    <div class="brand-side">
+
+      <div class="brand-logo">
+        <img src="../../../assets/iconlogo.jpg" style="width: 100px;" class="logo-img" alt="IconTax Filers Logo" />
+      </div>
+
+      <h2 class="brand-title">IconTax Filers</h2>
+      <p class="brand-text">
+        Your trusted platform for secure tax filing, client management, document uploads,
+        and real-time status tracking.
+      </p>
+    </div>
+
+    <!-- Login Section -->
+    <mat-card class="login-card">
+
+      <h2 class="title">Welcome Back</h2>
+      <p class="subtitle">Log in to continue to your dashboard</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <input matInput type="email" placeholder="you@example.com" formControlName="email" />
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Invalid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input 
+            matInput 
+            [type]="hidePassword ? 'password' : 'text'" 
+            placeholder="Enter your password" 
+            formControlName="password"
+          />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
+        </mat-form-field>
+
+        <div class="options-row">
+          <mat-checkbox>Remember me</mat-checkbox>
+          <a class="link" routerLink="/forgot-password">Forgot password?</a>
+        </div>
+
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+     <button
+  mat-raised-button 
+  color="primary" 
+  class="full-width primary-btn"
+  type="submit"
+  [disabled]="loginForm.invalid || isLoading"
+>
+  <ng-container *ngIf="!isLoading; else loadingTpl">
+    Login
+  </ng-container>
+
+  <ng-template #loadingTpl>
+    <div class="btn-loading">
+      <mat-progress-spinner
+        diameter="20"
+        mode="indeterminate"
+        strokeWidth="3"
+      ></mat-progress-spinner>
+      <span>Logging in...</span>
+    </div>
+  </ng-template>
+</button>
+
+
+      </form>
+
+      <p class="footer-text">
+        Don’t have an account?
+        <a class="link" routerLink="/register">Create one</a>
+      </p>
+
+    </mat-card>
+
+  </div>
+</div>

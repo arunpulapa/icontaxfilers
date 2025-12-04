@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
 import { environment } from '../../../environment/environment';
+import { AuthService } from 'src/app/auth/auth.service';
 
 export interface User {
   id?: string;
@@ -52,7 +53,8 @@ export class UsersComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -75,23 +77,26 @@ export class UsersComponent implements OnInit {
   }
 
   /** 🔹 Load Users (integrates with `{ total, items }` response) */
-  loadUsers(): void {
-    this.loading = true;
+ loadUsers(): void {
+  this.loading = true;
 
-    // Expecting: { total: number, items: User[] }
-    this.http.get<{ total: number; items: User[] }>(`${this.apiUrl}`).subscribe({
-      next: (res) => {
-        this.dataSource.data = res.items ?? [];
-        console.log(`Loaded ${res.items?.length ?? 0} users (total reported: ${res.total})`);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load users', err);
-        this.loading = false;
-        this.showBanner('❌ Failed to load users', true);
-      }
-    });
-  }
+  this.http.get<{ total: number; items: User[] }>(
+    this.apiUrl,
+    { headers: this.authService.getAuthHeaders() }  // 👈 add headers
+  ).subscribe({
+    next: (res) => {
+      this.dataSource.data = res.items ?? [];
+      console.log(`Loaded ${res.items?.length ?? 0} users (total reported: ${res.total})`);
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('Failed to load users', err);
+      this.loading = false;
+      this.showBanner('❌ Failed to load users', true);
+    }
+  });
+}
+
 
   /** 🔹 Open Add User Dialog */
   openAddUserDialog(): void {

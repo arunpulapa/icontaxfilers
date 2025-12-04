@@ -1,0 +1,90 @@
+<div class="dashboard-content">
+
+  <!-- Greeting -->
+  <section class="greeting-card">
+    <div class="greeting-text">
+      <h2>Welcome back, {{ userName | titlecase }}!</h2>
+      <p>Here’s what’s happening with your cases today.</p>
+    </div>
+  </section>
+
+  <!-- Stats row -->
+  <section class="stats-row">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="label">Active Cases</span>
+        <mat-icon>folder_open</mat-icon>
+      </div>
+      <div class="stat-value">{{ stats.activeCases }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="label">Pending Documents</span>
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="stat-value">{{ stats.pendingDocs }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="label">Completed Tasks</span>
+        <mat-icon>task_alt</mat-icon>
+      </div>
+      <div class="stat-value">{{ stats.completedTasks }}</div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-header">
+        <span class="label">Upcoming Deadlines</span>
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+      <div class="stat-value">{{ stats.upcomingDeadlines }}</div>
+    </div>
+  </section>
+
+  <!-- Middle: recent activity + deadlines -->
+  <section class="middle-row">
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Recent Activity</h3>
+      </div>
+      <div class="panel-body empty-state" *ngIf="!recentActivity.length">
+        <mat-icon>history</mat-icon>
+        <p>No recent activity</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Upcoming Deadlines</h3>
+      </div>
+      <div class="panel-body empty-state" *ngIf="!deadlines.length">
+        <mat-icon>event</mat-icon>
+        <p>No upcoming deadlines</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick actions -->
+  <section class="quick-actions">
+    <h3>Quick Actions</h3>
+    <div class="actions-row">
+      <button mat-stroked-button class="qa-btn" (click)="onUploadDocs()">
+        <mat-icon>upload_file</mat-icon>
+        <span>Upload Documents</span>
+      </button>
+
+      <button mat-stroked-button class="qa-btn" (click)="onContactStaff()">
+        <mat-icon>support_agent</mat-icon>
+        <span>Contact Staff</span>
+      </button>
+
+      <button mat-stroked-button class="qa-btn" (click)="onRequestService()">
+        <mat-icon>assignment</mat-icon>
+        <span>Request Service</span>
+      </button>
+    </div>
+  </section>
+
+</div>

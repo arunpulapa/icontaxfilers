@@ -1,0 +1,145 @@
+/* Full Background */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: url('https://i.pinimg.com/1200x/b7/4b/22/b74b22778b71a9fcc50e2a615c8b631d.jpg')
+    no-repeat center center / cover;
+
+  padding: 2rem;
+}
+
+/* Main Card */
+.auth-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 1050px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* Left Branding Section */
+.brand-side {
+  padding: 3rem 2.5rem;
+  background: linear-gradient(135deg, #301e45cc, #085ef3cc);
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.logo-img {
+  width: 140px;
+  height: auto;
+  margin-bottom: 1rem;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+}
+
+.brand-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.brand-text {
+  font-size: 16px;
+  opacity: 0.95;
+  line-height: 1.6;
+}
+
+/* Right Login Section */
+.login-card {
+  padding: 3rem 2.5rem;
+  background: #ffffff;
+  border-radius: 0;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+  color: #6b7280;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-top: -0.5rem;
+}
+
+.link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.primary-btn {
+  height: 48px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Footer */
+.footer-text {
+  margin-top: 1.8rem;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .auth-card {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-side {
+    padding: 2rem;
+  }
+
+  .login-card {
+    padding: 2rem;
+  }
+}
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+
+  span {
+    font-size: 0.95rem;
+  }
+
+  ::ng-deep .mat-mdc-progress-spinner {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}

@@ -1,103 +1,187 @@
-/* sidebar.component.scss */
-:host { display: block; }
+:host {
+  display: block;
+  height: 100vh;
+}
 
+/* Root container */
 .sidebar-root {
-  .sidebar-brand {
+  height: 100%;
+   height: 100vh; 
+  width: 257px;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+  color: #e5e7eb;
+  border-right: 1px solid rgba(148, 163, 184, 0.15);
+  overflow-x: hidden !important;          /* 👈 add this */
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;          /* 👈 add this */
+  padding: 8px 6px 12px;
+  background: linear-gradient(180deg, #020617 0, #020617 45%, #020617 100%);
+}
+
+.sidebar-nav {
+  /* ... existing styles ... */
+
+  /* Make inner content flex so icon + text are on one row */
+  .mat-mdc-list-item-unscoped-content {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px 18px;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .mdc-list-item__primary-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+}
+
+/* Brand header */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  background: linear-gradient(135deg, #020617, #020617);
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.75);
+}
+
+.logo-wrap {
+  width: 80px;
+  height: 52px;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #1d4ed8, #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.brand-tagline {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Navigation area */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 6px 12px;
+  background: linear-gradient(180deg, #020617 0, #020617 45%, #020617 100%);
+
+  /* make inner list content flex: icon + text perfectly centered */
+  .mat-mdc-list-item-unscoped-content,
+  .mdc-list-item__primary-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .mat-list-item,
+  .mat-mdc-list-item,
+  a.mat-list-item.menu-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 10px !important;
+    margin: 2px 6px;
+    height: 42px;
+    border-radius: 999px;
     cursor: pointer;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-
-    .logo {
-      width: 150px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-  .brand-text {
-  font-size: 20px;
-  font-weight: 700;
-  font-family: "Ubuntu", sans-serif;
-  color: #222;
-}
-.brand-text span {
-  background: #007bff;
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
+    text-decoration: none;
+    color: #e5e7eb !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
   }
 
-  .sidebar-nav {
-    height: calc(100vh - 72px);
-    overflow-y: auto;
-    background: #0f172a; /* flat dark */
-    padding-top: 8px;
-    color: #cbd5e1;
-
-    /* The mat-list-item element renders inner structure — use this to be safe */
-    .mat-list-item, a.mat-list-item.menu-item {
-      display: flex !important;
-      align-items: center !important;
-      gap: 12px;
-      padding: 10px 14px !important;
-      margin: 4px 8px;
-      height: 44px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      color: #e5e7eb;
-      transition: background .15s ease, color .15s ease;
-    }
-
-    /* icon */
-    .menu-icon, .mat-list-item .mat-icon {
-      font-size: 20px;
-      color: #9ca3af;
-      flex-shrink: 0;
-    }
-
-    .title {
-      font-size: 14px;
-      font-weight: 500;
-      color: #e5e7eb;
-    }
-
-    /* hover */
-    .mat-list-item:hover, a.mat-list-item.menu-item:hover {
-      background: rgba(255,255,255,0.06);
-    }
-    .mat-list-item:hover .menu-icon, a.mat-list-item.menu-item:hover .menu-icon {
-      color: #fff;
-    }
-    .mat-list-item:hover .title, a.mat-list-item.menu-item:hover .title {
-      color: #fff;
-    }
-
-    /* active */
-    .active-link {
-      background: rgba(59,130,246,0.14) !important;
-      color: #fff !important;
-      font-weight: 600;
-      border-left: 4px solid #3b82f6;
-      margin-left: 4px;
-    }
-    .active-link .menu-icon { color: #3b82f6 !important; }
-    .active-link .title { color: #fff !important; }
+  .menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;          /* fixes vertical centering */
+    color: #9ca3af !important;
+    flex-shrink: 0;
+    transform: translateY(1px); /* tiny nudge down; tweak 0–2px if needed */
   }
 
-  /* If you ever use children links */
-  .child-links {
-    margin-left: 40px;
-    a.mat-list-item {
-      font-size: 13px;
-      height: 36px;
-      padding-left: 0;
-      color: #94a3b8;
-    }
-    a.mat-list-item .mat-icon { font-size: 14px; color: #94a3b8; }
-    a.mat-list-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e5e7eb !important;
+  }
+
+  .mat-list-item:hover,
+  .mat-mdc-list-item:hover,
+  a.mat-list-item.menu-item:hover {
+    background: rgba(148, 163, 184, 0.18);
+    transform: translateX(2px);
+  }
+
+  .active-link {
+    background: linear-gradient(90deg, #1d4ed8, #22c55e);
+    color: #f9fafb !important;
+    font-weight: 600;
+    margin: 4px 6px;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35), 0 12px 20px rgba(15, 23, 42, 0.8);
+    transform: translateX(3px);
+  }
+
+  .active-link .menu-icon {
+    color: #ffffff !important;
+    transform: translateY(1px); /* keep same nudge on active */
+  }
+
+  .active-link .title {
+    color: #ffffff !important;
+  }
+}
+
+
+/* Optional child menu styling if you later add nested items */
+.child-links {
+  margin-left: 32px;
+  margin-top: 4px;
+
+  a.mat-list-item {
+    font-size: 13px;
+    height: 32px;
+    padding-left: 6px !important;
+    color: #9ca3af;
+    border-radius: 999px;
+  }
+
+  a.mat-list-item:hover {
+    background: rgba(148, 163, 184, 0.15);
+    color: #f9fafb;
   }
 }

@@ -1,50 +1,172 @@
+.clients-page {
+  padding: 24px;
+  background: #f3f4f6;
+}
+
+/* Outer card */
+.client-list-card {
+  padding: 24px 28px;
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+}
+
+/* Header */
 .list-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 
   h2 {
     margin: 0;
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 700;
     color: #111827;
   }
+
+  .sub {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 13px;
+  }
+}
+
+.add-btn {
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 6px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+}
+
+/* Search */
+.search-container {
+  margin-bottom: 24px;
 }
 
 .search-field {
-  width: 300px;
-  margin-bottom: 16px;
+  width: 420px;
+  max-width: 100%;
+
+  .mat-mdc-form-field-outline {
+    border-radius: 12px;
+  }
 }
 
-table {
-  width: 100%;
-  border-radius: 6px;
+/* Table wrapper */
+.table-wrapper {
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
   overflow: hidden;
-
-  th {
-    background: #f9fafb;
-    font-weight: 600;
-    color: #374151;
-  }
-
-  td {
-    font-size: 14px;
-    color: #4b5563;
-  }
-
-  tr:hover {
-    background: #f3f4f6;
-  }
+  background: #ffffff;
 }
 
-/* Status colors */
+/* Table */
+.client-table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+/* unify header/cell padding so columns align perfectly */
+.client-table th.mat-mdc-header-cell,
+.client-table td.mat-mdc-cell {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+.client-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  font-size: 14px;
+}
+
+.client-table td {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  font-size: 14px;
+  color: #4b5563;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* remove double line at very first row */
+.client-table tr:first-child td {
+  border-top: none;
+}
+
+/* Hover */
+.row-hover:hover {
+  background: #f3f4f6;
+}
+
+/* Name cell with avatar */
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  /* keep same horizontal padding from generic td */
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: #e6ecff;
+  color: #4055e8;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.name-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.name-text .primary {
+  color: #111827;
+  font-weight: 500;
+}
+
+.name-text .sub {
+  color: #6b7280;
+  font-size: 14px !important;
+}
+
+/* Status text */
+.status-pill {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
 .active {
   color: #16a34a;
-  font-weight: 600;
 }
 
 .inactive {
   color: #dc2626;
-  font-weight: 600;
+}
+
+/* Actions alignment */
+.actions-header {
+  text-align: right !important;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }

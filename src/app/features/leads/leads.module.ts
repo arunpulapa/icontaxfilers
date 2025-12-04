@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from "@angular/material/card";
 
 
 
@@ -40,7 +41,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatCheckboxModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
-  ]
+    MatProgressSpinnerModule,
+    MatCardModule
+]
 })
 export class LeadsModule { }

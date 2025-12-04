@@ -1,29 +1,107 @@
 .manage-users-card {
-  padding: 1.5rem;
+  padding: 24px 28px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
 }
 
+/* Toolbar */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 18px;
 }
 
-.search-field {
-  width: 250px;
-  margin-bottom: 1rem;
+.title-block h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
 }
 
-.full-width {
-  width: 100%;
+.title-block p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
 }
 
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 14px;
+  padding: 6px 18px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Loader */
 .loader {
   display: flex;
   justify-content: center;
-  margin: 1rem 0;
+  margin: 20px 0;
 }
 
+/* Table wrapper */
+.table-wrapper {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* Table */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header + cells padding so all align */
+.users-table th.mat-mdc-header-cell,
+.users-table td.mat-mdc-cell {
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+}
+
+.users-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 15px;
+  color: #374151;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.users-table td {
+  font-size: 14px;
+  color: #4b5563;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* striped effect */
+.striped-table tr:nth-child(even) td {
+  background-color: #fafbff;
+}
+
+.row-hover:hover td {
+  background: #eef2ff;
+}
+
+/* Actions */
+.actions-header {
+  text-align: right !important;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Banner messages (if you use them anywhere) */
 .banner-success {
   background-color: #4caf50 !important;
   color: #fff !important;
@@ -33,71 +111,77 @@
   background-color: #f44336 !important;
   color: #fff !important;
 }
+
+/* ---------- Dialog styles ---------- */
+
 .dialog-container {
-  width: 420px;
+  width: 520px;
   max-width: 95vw;
-  padding: 20px;
+  padding: 22px 24px 20px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  background: #fff;
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 14px;
 }
 
 .dialog-title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  margin-bottom: 15px;
-  color: #333;
+  margin: 0 0 16px;
+  color: #111827;
 }
 
+/* two-column layout on desktop */
 .user-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
-mat-form-field {
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+.form-grid mat-form-field {
   width: 100%;
-  background: #f9f9f9;
-  border-radius: 6px;
 }
 
-.mat-mdc-form-field {
-  padding: 4px 8px;
+/* appearance overrides */
+mat-form-field {
+  background: #f9fafb;
+  border-radius: 8px;
 }
 
-.mat-mdc-text-field-wrapper {
-  border-radius: 6px !important;
-  background-color: #f5f5f5 !important;
+::ng-deep .mat-mdc-text-field-wrapper {
+  border-radius: 8px !important;
+  background-color: #f9fafb !important;
 }
 
+/* Dialog actions */
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
-button[mat-flat-button] {
-  background-color: #3f51b5 !important;
-  color: white !important;
+.dialog-actions button[mat-flat-button] {
+  font-weight: 600;
 }
 
-button[mat-stroked-button] {
-  border-color: #ccc !important;
-  color: #333 !important;
+.dialog-actions button[mat-stroked-button] {
+  font-weight: 500;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
 }
 
-mat-dialog-container {
-  padding: 0 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-}
-
+/* Responsive dialog */
 @media (max-width: 600px) {
   .dialog-container {
     width: 95vw;
-    padding: 15px;
+    padding: 18px 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }

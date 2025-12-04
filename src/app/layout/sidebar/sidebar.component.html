@@ -1,23 +1,35 @@
-<!-- sidebar.component.html -->
-<div class="sidebar-root">
-  <div class="sidebar-brand" (click)="goHome()">
-    <img src="../../../assets/iconlogo.jpg" alt="logo" class="logo" />
-    <!-- <div class="brand-text" style="color: black;">ICON</div> -->
-  </div>
+  <!-- sidebar.component.html -->
+  <div class="sidebar-root">
+    <!-- Brand / Logo -->
+    <div class="sidebar-brand" (click)="goHome()">
+      <div class="logo-wrap">
+        <img src="../../../assets/iconlogo.jpg" alt="IconTax Filers" class="logo" />
+      </div>
+      <div class="brand-meta">
+        <div class="brand-name">IconTax Filers</div>
+        <div class="brand-tagline"> <strong>{{ userName }}</strong></div>
+        <!-- <small>{{ roleLabel }}</small> -->
+      </div>
+    </div>
 
-  <nav class="sidebar-nav" role="navigation" aria-label="Main menu">
-    <mat-nav-list>
-      <ng-container *ngFor="let m of menu">
-        <a mat-list-item
-           [routerLink]="m.path"
-           routerLinkActive="active-link"
-           (click)="navigate.emit()"
-           class="menu-item">
-          <span class="title">
-            <mat-icon class="menu-icon" style="margin-bottom: -8px !important;">{{ m.icon }}</mat-icon> <span >{{ m.title }}</span>
-          </span>
-        </a>
-      </ng-container>
-    </mat-nav-list>
-  </nav>
-</div>
+    <!-- Navigation -->
+    <nav class="sidebar-nav" role="navigation" aria-label="Main menu" >
+      <mat-nav-list>
+        <ng-container *ngFor="let m of menu">
+          <a
+            mat-list-item
+            [routerLink]="m.path"
+            routerLinkActive="active-link"
+            (click)="navigate.emit()"
+            class="menu-item"
+          >
+            <mat-icon class="menu-icon">{{ m.icon }}</mat-icon>
+
+            <span class="title">
+              {{ m.title }}
+            </span>
+          </a>
+        </ng-container>
+      </mat-nav-list>
+    </nav>
+  </div>

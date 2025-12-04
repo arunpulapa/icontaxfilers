@@ -14,12 +14,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
+import { SearchclientComponent } from './components/searchclient/searchclient.component';
 
 @NgModule({
   declarations: [
     ClientsComponent,
     ClientListComponent,
     ClientFormComponent,
+    SearchclientComponent,
   ],
   imports: [
     CommonModule,

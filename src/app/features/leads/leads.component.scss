@@ -1,98 +1,203 @@
-/* leads.component.css */
+.leads-card {
+  padding: 24px 28px;
+  border-radius: 20px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.16);
+}
 
+/* Header */
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 12px 0;
+  margin-bottom: 18px;
   gap: 12px;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
 }
 
 .import-area {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.filters {
-  display: flex;
+.import-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 6px;
+  border-radius: 16px;
+  padding: 6px 18px;
+  font-weight: 600;
+  text-transform: none;
 }
 
-.filter-field {
-  width: 220px;
-}
-
-.search-field {
-  flex: 1;
-  min-width: 200px;
-}
-
-.leads-table {
-  width: 100%;
-  overflow: auto;
-}
-
-/* tighten header spacing to look like the screenshot */
-.mat-header-cell, .mat-cell {
-  padding: 8px 12px;
-  white-space: nowrap;
-}
-
-/* actions column smaller */
-td.mat-cell .mat-icon-button {
-  margin-right: 4px;
-}
-td.mat-cell .mat-icon-button:last-child {
-  margin-right: 0;
-}
-.page-header {
+/* Filters + total */
+.filters-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .filters {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
 }
 
-.filter-field, .search-field {
-  width: 200px;
+.assign-field {
+  width: 190px;
 }
 
+.assign-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+}
+
+.filter-field {
+  width: 160px;
+}
+
+.search-field {
+  min-width: 220px;
+  flex: 1;
+}
+
+.total-count {
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.75);
+  font-size: 0.95rem;
+}
+
+/* Table */
 .table-container {
   position: relative;
   max-height: 70vh;
   overflow: auto;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
-/* ✅ Loader Overlay */
+.leads-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* header + cell alignment */
+.leads-table th.mat-header-cell,
+.leads-table td.mat-cell,
+.leads-table th.mat-mdc-header-cell,
+.leads-table td.mat-mdc-cell {
+  padding: 12px 16px !important;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.leads-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  font-size: 15px;
+}
+
+.leads-table td {
+  color: #4b5563;
+  border-top: 1px solid #f3f4f6;
+  font-size: 15px;
+}
+/* Sticky header with shadow */
+.leads-table th.mat-header-cell,
+.leads-table th.mat-mdc-header-cell {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background: #f9fafb !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+
+/* Hover */
+.leads-table tr.mat-row:hover td {
+  background: #eef2ff;
+}
+
+/* Actions */
+.actions-header {
+  text-align: right !important;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-new {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+}
+
+.status-contacted {
+  background: rgba(234, 179, 8, 0.12);
+  color: #b45309;
+}
+
+.status-converted {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.status-closed {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+/* Loader */
 .loading-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255,255,255,0.7);
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
   z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ✅ Snackbar banners */
+/* Snackbars */
 .banner-success {
   background-color: #43a047 !important;
   color: #fff !important;
@@ -105,4 +210,19 @@ td.mat-cell .mat-icon-button:last-child {
   color: #fff !important;
   font-weight: 500;
   text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .leads-card {
+    padding: 18px 16px;
+  }
+
+  .filters-row {
+    align-items: flex-start;
+  }
+
+  .total-count {
+    align-self: flex-end;
+  }
 }

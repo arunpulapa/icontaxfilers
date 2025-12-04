@@ -3,11 +3,14 @@ import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { environment } from '../../../../src/environment/environment';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, forkJoin, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, map } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
+import { LeadService } from './services/lead.service';
 
 export interface Lead {
+  id?: string;
   name: string;
   email: string;
   phone1: string;
@@ -28,7 +31,8 @@ export class LeadsComponent implements OnInit {
   dataSource = new MatTableDataSource<Lead>([]);
   selection = new SelectionModel<Lead>(true, []);
 
-  teams: string[] = ['All Teams'];
+  // Only Hunters and fighters (plus All Teams for filter)
+  teams: string[] = ['All Teams', 'Hunters', 'fighters'];
   statuses: string[] = ['All Statuses'];
 
   searchSubject = new Subject<string>();
@@ -37,13 +41,16 @@ export class LeadsComponent implements OnInit {
   // total count shown in UI
   total = 0;
 
+  // selected team for bulk assignment (must be Hunters or fighters)
+  selectedBulkTeam = '';
+
   filterValues = {
     search: '',
     team: 'All Teams',
     status: 'All Statuses'
   };
 
-  // header alias map used by the mapping logic
+  // header alias map used by the mapping logic (for XLSX parsing)
   private headerAliases: Record<string, string[]> = {
     name: ['name', 'full name', 'client name', 'lead name', 'customer', 'contact person'],
     email: ['email', 'email address', 'e-mail', 'mail'],
@@ -57,12 +64,19 @@ export class LeadsComponent implements OnInit {
   private emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private phoneRegex = /^[+()0-9\-\s]{6,20}$/;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  private teamToAssignedTo: Record<string, string> = {
+    Hunters: '',   // <-- put the GUID for Hunters assignee here, if required
+    fighters: ''   // <-- put the GUID for fighters assignee here, if required
+  };
+
+  // Optional: which user is performing the assignment (assignedBy). Fill if required by API.
+  private defaultAssignedBy: string | null = null; // e.g. '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private leadService: LeadService) {}
 
   ngOnInit(): void {
     this.loadLeads();
     this.loadStatuses();
-    this.loadRoles();
 
     // Debounce search
     this.searchSubject.pipe(debounceTime(400)).subscribe((term) => {
@@ -70,7 +84,7 @@ export class LeadsComponent implements OnInit {
       this.serverSearch(term);
     });
 
-    // Local filter
+    // Local filter predicate
     this.dataSource.filterPredicate = (data: Lead, filter: string): boolean => {
       const f = JSON.parse(filter);
       const text = (
@@ -85,36 +99,46 @@ export class LeadsComponent implements OnInit {
     };
   }
 
-  /** Load leads (supports array or { total, items }) */
-  loadLeads(stopLoaderAfterLoad: boolean = true): void {
-    this.loading = true;
-    this.http.get<any>(`${environment.apiBaseUrl}/Clients/Get-uploaded-clients`).subscribe({
-      next: (res) => {
-        // Support response shapes: array, or { total, items }
-        const items = Array.isArray(res) ? res : (res?.items ?? res?.data ?? []);
-        const totalFromRes = typeof res?.total === 'number' ? res.total : (Array.isArray(res) ? res.length : (items?.length ?? 0));
-        this.total = totalFromRes ?? (items?.length ?? 0);
+loadLeads(stopLoaderAfterLoad: boolean = true): void {
+  this.loading = true;
 
-        this.dataSource.data = (items ?? []).map((item: any) => ({
-          name: item.name ?? '',
-          email: item.email ?? '',
-          phone1: item.contact ?? item.phone ?? '',
-          phone2: item.contact2 ?? item.phone2 ?? '',
-          status: item.status ?? 'N/A',
-          team: item.team ?? 'UNASSIGNED'
-        }));
-        this.applyFilter();
+  this.leadService.getLeads().subscribe({
+    next: (res) => {
+      const items = Array.isArray(res) ? res : (res?.items ?? res?.data ?? []);
+      const totalFromRes =
+        typeof (res as any)?.total === 'number'
+          ? (res as any).total
+          : (Array.isArray(res) ? res.length : (items?.length ?? 0));
 
-        if (stopLoaderAfterLoad) this.loading = false;
-        this.showBanner('✅ Latest leads loaded successfully!');
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Failed to load leads', err);
-        this.showBanner('❌ Failed to load leads', true);
-      }
-    });
-  }
+      this.total = totalFromRes ?? (items?.length ?? 0);
+
+      this.dataSource.data = (items ?? []).map((item: any) => ({
+        id: item.id ?? item.clientId ?? undefined,
+        name: item.name ?? '',
+        email: item.email ?? '',
+        phone1: item.contact ?? item.phone ?? '',
+        phone2: item.contact2 ?? item.phone2 ?? '',
+        status: item.status ?? 'N/A',
+        team: item.team ?? 'UNASSIGNED',
+      }));
+
+      console.log(
+        '📌 TABLE DATA FETCHED FROM API:',
+        JSON.stringify(this.dataSource.data, null, 2)
+      );
+
+      this.applyFilter();
+      if (stopLoaderAfterLoad) this.loading = false;
+      this.showBanner('✅ Latest leads loaded successfully!');
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error('Failed to load leads', err);
+      this.showBanner('❌ Failed to load leads', true);
+    },
+  });
+}
+
 
   /** Server-side search */
   serverSearch(query: string): void {
@@ -125,10 +149,8 @@ export class LeadsComponent implements OnInit {
     }
 
     this.loading = true;
+    const body = { searchText: trimmed };
 
-    const body = { searchText: trimmed }; // send this in GET body
-
-    // Manually create GET request with body
     const req = new HttpRequest(
       'GET',
       `${environment.apiBaseUrl}/Clients/SearchByLetters`,
@@ -138,9 +160,7 @@ export class LeadsComponent implements OnInit {
 
     this.http.request<any>(req).subscribe({
       next: (event: any) => {
-        // filter only successful response bodies
         if (!event || !event.body) return;
-
         const res = event.body;
         const items = Array.isArray(res) ? res : (res?.items ?? res?.data ?? []);
         this.total = typeof res?.total === 'number' ? res.total : (Array.isArray(res) ? res.length : items.length);
@@ -152,8 +172,8 @@ export class LeadsComponent implements OnInit {
           return;
         }
 
-        // Map API fields
         this.dataSource.data = (items ?? []).map((item: any) => ({
+          id: item.id ?? item.clientId ?? undefined,
           name: item.name || '',
           email: item.email || '',
           phone1: item.contact || item.phone || '',
@@ -173,161 +193,211 @@ export class LeadsComponent implements OnInit {
     });
   }
 
-  /** Apply local filters */
   applyFilter(): void {
     this.dataSource.filter = JSON.stringify(this.filterValues);
     this.selection.clear();
   }
 
-  /** Dropdowns */
-  loadStatuses(): void {
-    this.http.get<string[]>(`${environment.apiBaseUrl}/WorkFlow/GetStatus`).subscribe({
-      next: (res) => (this.statuses = ['All Statuses', ...res]),
-      error: (err) => console.error('Failed to load statuses', err)
-    });
+ loadStatuses(): void {
+  this.leadService.getStatuses().subscribe({
+    next: (res) => (this.statuses = ['All Statuses', ...res]),
+    error: (err) => console.error('Failed to load statuses', err),
+  });
+}
+
+
+onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  const allowed = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
+    'text/csv'
+  ];
+  if (!allowed.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
+    this.showBanner('❌ Unsupported file type', true);
+    input.value = '';
+    return;
   }
 
-  loadRoles(): void {
-    this.http.get<string[]>(`${environment.apiBaseUrl}/WorkFlow/GetRoles`).subscribe({
-      next: (res) => (this.teams = ['All Teams', ...res]),
-      error: (err) => console.error('Failed to load roles/teams', err)
-    });
-  }
+  this.loading = true;
+  const reader = new FileReader();
 
-  /**
-   * File upload + SheetJS parsing + mapping + fallback
-   * - parsedForUpload: { name, email, contact, contact2, status, team } -> sent to backend
-   * - previewData: Lead[] shown in table immediately for quick verification
-   */
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
+  reader.onload = (e: ProgressEvent<FileReader>) => {
+    try {
+      const data = e.target?.result;
+      const workbook = XLSX.read(data as string, { type: 'binary' });
 
-    const file = input.files[0];
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
 
-    // Quick file type guard
-    const allowed = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel',
-      'text/csv'
-    ];
-    if (!allowed.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
-      this.showBanner('❌ Unsupported file type', true);
-      input.value = '';
-      return;
-    }
+      const raw: any[][] = XLSX.utils.sheet_to_json<any>(worksheet, {
+        header: 1,
+        defval: null
+      });
 
-    this.loading = true;
-
-    const reader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      try {
-        const data = e.target?.result;
-        // read workbook - prefer binary string
-        const workbook = XLSX.read(data as string, { type: 'binary' });
-
-        // use first sheet
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-
-        // convert to JSON, with raw values as arrays (header row detection easier)
-        const raw: any[][] = XLSX.utils.sheet_to_json<any>(worksheet, { header: 1, defval: null });
-
-        if (!raw || raw.length === 0) {
-          this.loading = false;
-          this.showBanner('⚠️ Empty spreadsheet', true);
-          input.value = '';
-          return;
-        }
-
-        // first row is headers (may be messy)
-        const headerRow: any[] = raw[0].map((h: any) => (h === null ? '' : String(h).trim()));
-
-        // remaining rows (filter out entirely blank rows)
-        const rows: any[][] = raw.slice(1).filter(r => r && r.some((c: any) => c !== null && String(c).trim() !== ''));
-
-        if (!rows.length) {
-          this.loading = false;
-          this.showBanner('⚠️ No data rows found', true);
-          input.value = '';
-          return;
-        }
-
-        // build mapping (field -> column index)
-        const mapping = this.buildHeaderMapping(headerRow, rows);
-
-        // build structured data arrays
-        const parsedForUpload = rows.map(r => this.mapRowToUploadObject(r, headerRow, mapping)); // shape for backend
-        const previewData: Lead[] = rows.map(r => this.mapRowToLead(r, headerRow, mapping)); // shape for table preview
-
-        // log mapping and a sample so you can verify quickly
-        console.log('Detected column mapping:', mapping);
-        console.log('Parsed (upload) sample:', parsedForUpload.slice(0, 5));
-        console.log('Preview sample:', previewData.slice(0, 5));
-
-        // show preview immediately in UI so user can confirm mapping visually
-        this.dataSource.data = previewData;
-        this.total = previewData.length;
-        this.applyFilter();
-
-        // POST JSON to API that accepts parsed leads (create endpoint if missing)
-        const importEndpoint = `${environment.apiBaseUrl}/Clients/ImportParsed`; // change if needed
-        this.http.post<any>(importEndpoint, parsedForUpload).subscribe({
-          next: (resp) => {
-            // backend may return summary; if not use parsed length
-            if (resp) {
-              if (typeof resp?.total === 'number') this.total = resp.total;
-              else if (Array.isArray(resp?.items)) this.total = resp.items.length;
-              else this.total = parsedForUpload.length;
-            } else {
-              this.total = parsedForUpload.length;
-            }
-
-            this.showBanner('✅ File parsed and uploaded successfully!');
-            this.loadLeads();
-            this.loading = false;
-          },
-          error: (err) => {
-            console.warn('Import JSON failed, falling back to file upload', err);
-            // fallback: send original file to existing endpoint
-            const form = new FormData();
-            form.append('file', file, file.name);
-            this.http.post<any>(`${environment.apiBaseUrl}/Clients/upload-excel`, form).subscribe({
-              next: (resp2) => {
-                if (resp2) {
-                  if (typeof resp2?.total === 'number') this.total = resp2.total;
-                  else if (Array.isArray(resp2?.items)) this.total = resp2.items.length;
-                }
-                this.showBanner('✅ File uploaded (fallback). Fetching latest leads...');
-                this.loadLeads(true);
-                this.loading = false;
-              },
-              error: (err2) => {
-                this.loading = false;
-                console.error('Upload fallback failed', err2);
-                this.showBanner('❌ Upload failed', true);
-              }
-            });
-          }
-        });
-
-      } catch (err) {
-        console.error('Parse error', err);
-        this.showBanner('❌ Failed to parse file', true);
+      if (!raw || raw.length === 0) {
         this.loading = false;
-      } finally {
+        this.showBanner('⚠️ Empty spreadsheet', true);
         input.value = '';
+        return;
       }
+
+      const headerRow: any[] = raw[0].map((h: any) =>
+        h === null ? '' : String(h).trim()
+      );
+      const rows: any[][] = raw
+        .slice(1)
+        .filter(
+          (r) =>
+            r && r.some((c: any) => c !== null && String(c).trim() !== '')
+        );
+
+      if (!rows.length) {
+        this.loading = false;
+        this.showBanner('⚠️ No data rows found', true);
+        input.value = '';
+        return;
+      }
+
+      const mapping = this.buildHeaderMapping(headerRow, rows);
+      const previewData: Lead[] = rows.map((r) =>
+        this.mapRowToLead(r, headerRow, mapping)
+      );
+
+      console.log('Detected column mapping:', mapping);
+      console.log('Preview sample:', previewData.slice(0, 5));
+
+      // Show preview in table
+      this.dataSource.data = previewData;
+      this.total = previewData.length;
+      this.applyFilter();
+
+      // 🔥 Real upload – just send the file to /Clients/upload-excel via service
+      this.leadService.uploadExcel(file).subscribe({
+        next: (resp) => {
+          if (resp) {
+            if (typeof resp?.total === 'number') {
+              this.total = resp.total;
+            } else if (Array.isArray(resp?.items)) {
+              this.total = resp.items.length;
+            }
+          }
+
+          this.showBanner(
+            '✅ File uploaded. Fetching latest leads from server...'
+          );
+          this.loadLeads(true);
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Upload failed', err);
+          this.showBanner('❌ Upload failed', true);
+        }
+      });
+    } catch (err) {
+      console.error('Parse error', err);
+      this.showBanner('❌ Failed to parse file', true);
+      this.loading = false;
+    } finally {
+      input.value = '';
+    }
+  };
+
+  reader.readAsBinaryString(file);
+}
+
+
+
+
+assignSelectedTeam(): void {
+  // helper to build safe URL
+  const buildUrl = () => {
+    const base = environment.apiBaseUrl.replace(/\/+$/, '');
+    if (/\/api$/i.test(base)) return `${base}/ClientAssignment`;
+    return `${base}/api/ClientAssignment`;
+  };
+
+  const selected = this.selection.selected;
+  if (!selected || selected.length === 0) {
+    this.showBanner('⚠️ No rows selected to assign', true);
+    return;
+  }
+  if (!['Hunters', 'fighters'].includes(this.selectedBulkTeam)) {
+    this.showBanner('⚠️ Please pick Hunters or fighters', true);
+    return;
+  }
+
+  const rawAssignedTo = (this.teamToAssignedTo[this.selectedBulkTeam] || '').trim();
+  const assignedTo = rawAssignedTo !== '' ? rawAssignedTo : null;
+  const url = buildUrl();
+  console.log('Using assignment URL:', url);
+
+  const requests = selected.map(row => {
+    let clientId: any = row.id;
+    const num = Number(row.id);
+    if (!isNaN(num)) clientId = num;
+
+    const payload = {
+      clientId: 10,
+      assignedTo: "98AD9CE4-772F-4954-9B9C-3A7CBEB37C91",
+      assignedBy: "3484152C-56E7-47E9-A573-4BDC2B94005E",
+      roleAtAssignment: "TeamLead",
+      status: 'Assigned',
+      notes: 'Initial assignment'
     };
 
-    // read as binary string for XLSX
-    reader.readAsBinaryString(file);
-  }
+    console.log("--------------------------------------------------");
+    console.log("➡️ SENDING POST:", url);
+    console.log("➡️ PAYLOAD:", JSON.stringify(payload, null, 2));
 
-  /**
-   * Build a mapping (field -> column index) using headers and sampling rows.
-   * Returns mapping for: name, email, contact, contact2, status, team
-   */
+    return this.http.post(url, payload, { observe: "response" }).pipe(
+      map(res => {
+        console.log("🟢 SUCCESS RESPONSE:", res);
+        return { ok: true, res };
+      }),
+      catchError(err => {
+        console.log("🔴 ERROR RESPONSE");
+        console.log("❌ STATUS:", err.status);
+        console.log("❌ MESSAGE:", err.message);
+        console.log("❌ ERROR BODY:", err.error);
+        console.log("❌ FULL ERROR OBJECT:", err);
+        return of({ ok: false, err, payload });
+      })
+    );
+  });
+
+  this.loading = true;
+  forkJoin(requests).subscribe({
+    next: results => {
+      const ok = results.filter(r => r.ok).length;
+      const fail = results.length - ok;
+
+      console.log("--------------------------------------------------");
+      console.log("📌 BULK SUMMARY");
+      console.log("Success:", ok);
+      console.log("Failed:", fail);
+      console.log("Full Results:", results);
+
+      this.showBanner(`Bulk Completed → Success: ${ok}, Failed: ${fail}`);
+      this.loadLeads();
+      this.selection.clear();
+      this.loading = false;
+    },
+    error: err => {
+      console.log("❌ BULK PROCESS ERROR:", err);
+      this.showBanner("Bulk assign failed", true);
+      this.loading = false;
+    }
+  });
+}
+
+
+
+  // mapping helpers (unchanged)
   private buildHeaderMapping(headers: any[], sampleRows: any[][]): Record<string, number | null> {
     const mapping: Record<string, number | null> = {
       name: null,
@@ -401,7 +471,6 @@ export class LeadsComponent implements OnInit {
     return mapping;
   }
 
-  /** Normalize header value to a lowercase single-space phrase */
   private normalizeHeader(h: string): string {
     if (!h) return '';
     return h
@@ -413,7 +482,6 @@ export class LeadsComponent implements OnInit {
       .trim();
   }
 
-  /** Map a sheet row (array) into standard Lead object (for preview) using mapping */
   private mapRowToLead(row: any[], headerRow: any[], mapping: Record<string, number | null>): Lead {
     const read = (col: number | null) => (col === null ? null : (row[col] ?? null));
 
@@ -434,7 +502,6 @@ export class LeadsComponent implements OnInit {
     };
   }
 
-  /** Map a sheet row (array) into object shape expected by backend for upload */
   private mapRowToUploadObject(row: any[], headerRow: any[], mapping: Record<string, number | null>) {
     const read = (col: number | null) => (col === null ? null : (row[col] ?? null));
     const name = read(mapping['name']) ?? '';
@@ -454,7 +521,7 @@ export class LeadsComponent implements OnInit {
     };
   }
 
-  /** Selection helpers */
+  // Selection helpers and UI actions unchanged
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
@@ -472,7 +539,6 @@ export class LeadsComponent implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.name}`;
   }
 
-  /** Row Actions */
   edit(row: Lead) {
     console.log('Edit', row);
     this.showBanner(`✏️ Edit ${row.name}`);
@@ -488,7 +554,6 @@ export class LeadsComponent implements OnInit {
     this.showBanner(`🗑️ Removed ${row.name}`);
   }
 
-  /** Snackbar Banner Utility */
   private showBanner(message: string, isError: boolean = false): void {
     this.snackBar.open(message, 'OK', {
       duration: 3500,

@@ -1,102 +1,209 @@
 .invoice-container {
+  max-width: 720px;
   margin: 30px auto;
-  padding: 24px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 24px 26px 22px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  font-size: 15px;
 }
 
-.item-row {
+/* Header */
+.invoice-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
 }
 
-.dropdown, .amount-input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
+.invoice-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.invoice-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Items card */
+.items-card {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 14px 14px 10px;
+  margin-bottom: 16px;
+  background: #f9fafb;
+}
+
+/* Header row for item/amount */
+.items-header {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr auto;
+  gap: 12px;
+  padding: 4px 2px 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.items-header .right-align {
+  text-align: right;
+}
+
+/* Hide text in last column header (for remove button) */
+.items-header .remove-col {
+  text-align: center;
+}
+
+/* Dynamic rows */
+.item-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr auto;
+  gap: 12px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.dropdown,
+.amount-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dropdown:focus,
+.amount-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.amount-input {
+  text-align: right;
 }
 
 .remove-btn {
-  background: #ffebee;
   border: none;
+  background: #fee2e2;
+  color: #b91c1c;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 0.8rem;
+  align-self: center;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
+.remove-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* Add line */
 .add-btn-container {
-  margin: 12px 0 20px;
+  margin-top: 6px;
 }
 
 .add-btn {
-  border: 2px solid #333;
-  background: #fff;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-weight: 600;
+  border: 1px dashed #9ca3af;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: 0.2s;
+  color: #374151;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .add-btn:hover {
-  background: #f1f1f1;
+  background: #e5edff;
+  border-color: #2563eb;
 }
 
+/* Summary */
 .summary-box {
   background: #f9fbff;
-  padding: 16px;
-  border-radius: 12px;
-  margin-top: 16px;
+  padding: 14px 14px 10px;
+  border-radius: 14px;
+  border: 1px solid #dbeafe;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 12px 0;
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.summary-row span {
+  color: #4b5563;
 }
 
 .summary-input {
-  width: 120px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  width: 130px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  text-align: right;
 }
 
 .summary-row.final {
-  background: #eef5ff;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 16px;
-  color: #2e3b55;
+  margin-top: 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background: #eef2ff;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
 }
 
+/* Actions */
 .actions {
   text-align: right;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .save-btn {
   background: linear-gradient(135deg, #3f51b5, #2196f3);
-  color: white;
-  font-size: 16px;
+  color: #ffffff;
+  font-size: 0.98rem;
   font-weight: 600;
   border: none;
-  border-radius: 30px;
-  padding: 12px 28px;
+  border-radius: 999px;
+  padding: 10px 26px;
   cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 6px 14px rgba(33, 150, 243, 0.4);
+  transition: 0.2s ease;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
 }
 
 .save-btn:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #2196f3, #1976d2);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .invoice-container {
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+
+  .item-row,
+  .items-header {
+    grid-template-columns: 1.8fr 1fr auto;
+  }
+
+  .summary-input {
+    width: 100px;
+  }
 }

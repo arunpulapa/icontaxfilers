@@ -1,9 +1,14 @@
 <mat-card class="manage-users-card">
+  <!-- Toolbar -->
   <div class="toolbar">
-    <h2>Manage Users</h2>
-    <button mat-flat-button color="primary" (click)="openAddUserDialog()">
+    <div class="title-block">
+      <h2>Manage Users</h2>
+      <p style="font-size: 14px;">View and manage internal team members.</p>
+    </div>
+
+    <button mat-flat-button color="primary" (click)="openAddUserDialog()" class="add-btn">
       <mat-icon>person_add</mat-icon>
-      Add User
+      <span>Add User</span>
     </button>
   </div>
 
@@ -13,62 +18,65 @@
   </div>
 
   <!-- Table -->
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 striped-table" *ngIf="!loading">
-    <ng-container matColumnDef="firstName">
-      <th mat-header-cell *matHeaderCellDef>First Name</th>
-      <td mat-cell *matCellDef="let row">{{ row.firstName }}</td>
-    </ng-container>
+  <div class="table-wrapper" *ngIf="!loading">
+    <table mat-table [dataSource]="dataSource" class="users-table striped-table">
 
-    <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef>Last Name</th>
-      <td mat-cell *matCellDef="let row">{{ row.lastName }}</td>
-    </ng-container>
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef>First Name</th>
+        <td mat-cell *matCellDef="let row">{{ row.firstName }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-      <td mat-cell *matCellDef="let row">{{ row.email }}</td>
-    </ng-container>
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef>Last Name</th>
+        <td mat-cell *matCellDef="let row">{{ row.lastName }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="phone">
-      <th mat-header-cell *matHeaderCellDef>Phone</th>
-      <td mat-cell *matCellDef="let row">{{ row.phone }}</td>
-    </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="deskNumber">
-      <th mat-header-cell *matHeaderCellDef>Desk #</th>
-      <td mat-cell *matCellDef="let row">{{ row.deskNumber }}</td>
-    </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let row">{{ row.phone }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="whatsAppNumber">
-      <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
-      <td mat-cell *matCellDef="let row">{{ row.whatsAppNumber }}</td>
-    </ng-container>
+      <ng-container matColumnDef="deskNumber">
+        <th mat-header-cell *matHeaderCellDef>Desk #</th>
+        <td mat-cell *matCellDef="let row">{{ row.deskNumber }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef>Role</th>
-      <td mat-cell *matCellDef="let row">{{ row.role }}</td>
-    </ng-container>
+      <ng-container matColumnDef="whatsAppNumber">
+        <th mat-header-cell *matHeaderCellDef>WhatsApp</th>
+        <td mat-cell *matCellDef="let row">{{ row.whatsAppNumber }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="teamName">
-      <th mat-header-cell *matHeaderCellDef>Team</th>
-      <td mat-cell *matCellDef="let row">{{ row.teamName }}</td>
-    </ng-container>
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef>Role</th>
+        <td mat-cell *matCellDef="let row">{{ row.role }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-icon-button color="primary" matTooltip="Edit User">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" matTooltip="Delete User">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="teamName">
+        <th mat-header-cell *matHeaderCellDef>Team</th>
+        <td mat-cell *matCellDef="let row">{{ row.teamName }}</td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button mat-icon-button color="primary" matTooltip="Edit User">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Delete User">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="row-hover"></tr>
+    </table>
+  </div>
 </mat-card>
 
 <!-- ✅ Add User Dialog -->
@@ -77,50 +85,50 @@
     <h2 class="dialog-title">Add User</h2>
 
     <form [formGroup]="userForm" class="user-form">
-      <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="firstName" placeholder="Enter name" required />
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" placeholder="Enter last name" required />
-      </mat-form-field>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeholder="Enter first name" required />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="example@email.com" required />
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" placeholder="Enter last name" required />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Phone</mat-label>
-        <input matInput formControlName="phone" placeholder="9876543210" required />
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="example@email.com" required />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Desk Number</mat-label>
-        <input matInput formControlName="deskNumber" placeholder="D-101" />
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" placeholder="9876543210" required />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>WhatsApp Number</mat-label>
-        <input matInput formControlName="whatsAppNumber" placeholder="9876543210" />
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Desk Number</mat-label>
+          <input matInput formControlName="deskNumber" placeholder="D-101" />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>User Type</mat-label>
-        <mat-select formControlName="role" required>
-          <mat-option value="TeamLead">TeamLead</mat-option>
-          <!-- <mat-option value="user">user</mat-option>
-          <mat-option value="Reviewer">Reviewer</mat-option>
-          <mat-option value="Admin">Admin</mat-option> -->
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>WhatsApp Number</mat-label>
+          <input matInput formControlName="whatsAppNumber" placeholder="9876543210" />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
-  <mat-label>Password</mat-label>
-  <input matInput type="password" formControlName="password" required />
-</mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>User Type</mat-label>
+          <mat-select formControlName="role" required>
+            <mat-option value="TeamLead">Team Lead</mat-option>
+            <!-- other roles can be added later -->
+          </mat-select>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" required />
+        </mat-form-field>
+      </div>
     </form>
 
     <div class="dialog-actions">
