@@ -1,9 +1,10 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { environment } from '../../../environment/environment';
 import { AuthService } from 'src/app/auth/auth.service';
 
@@ -28,8 +29,9 @@ export interface User {
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, AfterViewInit {
   @ViewChild('addUserDialog') addUserDialog!: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns: string[] = [
     'firstName',
@@ -47,7 +49,14 @@ export class UsersComponent implements OnInit {
   userForm!: FormGroup;
   loading = false;
 
-  private apiUrl = `${environment.apiBaseUrl}/Users`;
+  // pagination (client-side here)
+  totalUsers = 0;
+  pageIndex = 0;
+  pageSize = 25;
+  pageSizeOptions = [10, 25, 50, 100];
+
+  // better: base URL for Users
+  private usersBaseUrl = `${environment.apiBaseUrl}/Users`;
 
   constructor(
     private fb: FormBuilder,
@@ -76,33 +85,51 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
   }
 
-  /** 🔹 Load Users (integrates with `{ total, items }` response) */
- loadUsers(): void {
-  this.loading = true;
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+  }
 
-  this.http.get<{ total: number; items: User[] }>(
-    this.apiUrl,
-    { headers: this.authService.getAuthHeaders() }  // 👈 add headers
-  ).subscribe({
-    next: (res) => {
-      this.dataSource.data = res.items ?? [];
-      console.log(`Loaded ${res.items?.length ?? 0} users (total reported: ${res.total})`);
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Failed to load users', err);
-      this.loading = false;
-      this.showBanner('❌ Failed to load users', true);
-    }
-  });
-}
+  /** 🔹 Load Users (API returns a plain array User[]) */
+  loadUsers(): void {
+    this.loading = true;
 
+    this.http.get<User[]>(
+      `${this.usersBaseUrl}/GetUserByRole`,
+      {
+        headers: this.authService.getAuthHeaders(),
+        params: {
+          role: 'User'    // only team members
+        }
+      }
+    ).subscribe({
+      next: (users) => {
+        this.dataSource.data = users ?? [];
+        this.totalUsers = this.dataSource.data.length;
+
+        console.log('Loaded users:', this.dataSource.data);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load users', err);
+        this.loading = false;
+        this.showBanner('❌ Failed to load users', true);
+      }
+    });
+  }
+
+  /** 🔹 MatPaginator event (client-side pagination only) */
+  onPageChanged(event: PageEvent): void {
+    // with MatTableDataSource + this.dataSource.paginator,
+    // Angular Material handles client-side pagination automatically.
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
 
   /** 🔹 Open Add User Dialog */
   openAddUserDialog(): void {
     this.dialog.open(this.addUserDialog, {
       width: '420px',
-      height: '1000px',
+      height: 'fit-content',
       disableClose: true,
       panelClass: 'custom-user-dialog'
     });
@@ -117,7 +144,6 @@ export class UsersComponent implements OnInit {
 
     this.loading = true;
 
-    // Build payload using camelCase to match the example schema
     const payload = {
       firstName: this.userForm.value.firstName,
       lastName: this.userForm.value.lastName,
@@ -135,15 +161,21 @@ export class UsersComponent implements OnInit {
 
     console.log('📤 Sending payload (JSON):', payload);
 
-    // Debugging: observe full response while investigating; remove observe after debugging if you like
-    this.http.post(`${this.apiUrl}/Create`, payload, {
-      headers: { 'Content-Type': 'application/json' },
-      observe: 'response'
-    }).subscribe({
+    this.http.post(
+      `${this.usersBaseUrl}/Create`,   // ✅ fixed URL
+      payload,
+      {
+        headers: this.authService.getAuthHeaders(), // include token, content-type json
+        observe: 'response'
+      }
+    ).subscribe({
       next: (resp) => {
         this.dialog.closeAll();
         this.userForm.reset();
+
+        // reload list after create
         this.loadUsers();
+
         this.loading = false;
         this.showBanner('✅ User created successfully!');
         console.log('✅ Create response status:', resp.status, resp);

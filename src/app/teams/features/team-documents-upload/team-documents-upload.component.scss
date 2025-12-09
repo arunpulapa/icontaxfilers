@@ -1,0 +1,285 @@
+.docs-page {
+  padding: 24px;
+  background: #f3f4f6;
+}
+
+.docs-card {
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.16);
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* Client pill */
+.client-info {
+  display: flex;
+  align-items: center;
+}
+
+.client-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-size: 0.9rem;
+}
+
+/* Layout left/right */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.6fr);
+  gap: 24px;
+}
+
+/* Upload panel */
+.upload-panel {
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.section-title {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Drop zone */
+.drop-zone {
+  margin-top: 10px;
+  padding: 18px 14px;
+  border-radius: 14px;
+  border: 2px dashed #cbd5e1;
+  background: #fefefe;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.drop-zone mat-icon {
+  font-size: 40px;
+  color: #60a5fa;
+}
+
+.drop-zone p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.drop-zone .muted {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.drop-zone .hint {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.drop-zone--active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+/* Selected files */
+.selected-files {
+  margin-top: 14px;
+}
+
+.files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.file-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #eef2ff;
+  margin-bottom: 6px;
+}
+
+.file-icon {
+  color: #4f46e5;
+}
+
+.file-meta .name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.file-meta .size {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* Upload actions */
+.upload-actions {
+  margin-top: 14px;
+  text-align: right;
+}
+
+.upload-btn {
+  text-transform: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+}
+
+/* List panel */
+.list-panel {
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.search-field {
+  width: 260px;
+  max-width: 100%;
+}
+
+/* Table */
+.table-wrapper {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.docs-table th.mat-header-cell,
+.docs-table th.mat-mdc-header-cell,
+.docs-table td.mat-cell,
+.docs-table td.mat-mdc-cell {
+  padding: 10px 14px !important;
+  font-size: 0.95rem;
+}
+
+.docs-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.docs-table td {
+  color: #4b5563;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* Status/type pill */
+.type-pill {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Actions */
+.actions-header {
+  text-align: right !important;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 34px 12px;
+  color: #6b7280;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+
+/* Uploading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .list-panel {
+    margin-top: 12px;
+  }
+}

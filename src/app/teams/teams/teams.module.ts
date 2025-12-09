@@ -7,15 +7,28 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TeamDocumentsUploadComponent } from '../features/team-documents-upload/team-documents-upload.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    TeamDocumentsUploadComponent
+  ],
   imports: [
     CommonModule,
     TeamsRoutingModule,
-
-
+    FormsModule,
+    ReactiveFormsModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatProgressBarModule,
+    MatTableModule,
+    MatCardModule
   ]
 })
 export class TeamsModule { }

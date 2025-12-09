@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { ClientRoutingModule } from './client-routing.module';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { DocumentsComponent } from './features/documents/documents.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
@@ -15,12 +14,14 @@ import { SettingsComponent } from './features/settings/settings.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from "@angular/material/card";
+import { ClientDocumentsComponent } from './features/client-documents/client-documents.component';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    DocumentsComponent,
+    ClientDocumentsComponent,
     ProfileComponent,
     SettingsComponent
   ],
@@ -37,7 +38,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatProgressBarModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatCardModule
 ]
 })
 export class ClientModule { }

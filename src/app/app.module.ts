@@ -13,7 +13,6 @@ import { ClientsComponent } from './teams/features/clients/clients.component';
 import { TaskmanagmentComponent } from './teams/features/taskmanagment/taskmanagment.component';
 import { MyclientsComponent } from './teams/features/myclients/myclients.component';
 import { AssignedleadsComponent } from './teams/features/assignedleads/assignedleads.component';
-import { DocumentsComponent } from './teams/features/documents/documents.component';
 import { ProfileComponent } from './teams/features/profile/profile.component';
 import { SettingsComponent } from './teams/features/settings/settings.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +31,6 @@ import { MatCardModule } from '@angular/material/card';
     TaskmanagmentComponent,
     MyclientsComponent,
     AssignedleadsComponent,
-    DocumentsComponent,
     ProfileComponent,
     SettingsComponent,
   ],
