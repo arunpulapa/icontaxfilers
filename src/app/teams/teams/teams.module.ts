@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TeamDocumentsUploadComponent } from '../features/team-documents-upload/team-documents-upload.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { MatCardModule } from '@angular/material/card';
     MatSelectModule,
     MatProgressBarModule,
     MatTableModule,
-    MatCardModule
+    MatCardModule,
+    MatSnackBarModule,
   ]
 })
 export class TeamsModule { }

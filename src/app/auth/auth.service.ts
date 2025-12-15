@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export interface User {
   lastName: any;
   firstName: any;
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;   
@@ -21,7 +21,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'https://aspnetclusters-205348-0.cloudclusters.net'; // your API base
+  private baseUrl = 'https://iconfilers.club/IconFilers'; // your API base
 
  constructor(private http: HttpClient) {}
 
@@ -31,7 +31,7 @@ export class AuthService {
 
   // 🔹 used by interceptor
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   }
 
   getAuthHeaders(): HttpHeaders {
@@ -46,7 +46,7 @@ export class AuthService {
   }
   // 🔹 used by sidebar / guards
   getRole(): string | null {
-    return localStorage.getItem('role');
+    return sessionStorage.getItem('role');
   }
   getUserName(): string {
   const user = this.getUser();
@@ -54,12 +54,12 @@ export class AuthService {
 }
 
   getUser(): User | null {
-    const raw = localStorage.getItem('user');
+    const raw = sessionStorage.getItem('user');
     return raw ? JSON.parse(raw) : null;
   }
 
   logout() {
-    localStorage.clear();
+    sessionStorage.clear();
   }
 
 

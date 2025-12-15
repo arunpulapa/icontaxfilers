@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from "@angular/material/card";
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 
@@ -42,7 +43,8 @@ import { MatCardModule } from "@angular/material/card";
     MatTooltipModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatCardModule
+    MatCardModule,
+    MatPaginatorModule
 ]
 })
 export class LeadsModule { }

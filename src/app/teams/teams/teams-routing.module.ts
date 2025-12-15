@@ -4,7 +4,7 @@ import { DashboardComponent } from 'src/app/teams/features/dashboard/dashboard.c
 import { ClientsComponent } from '../features/clients/clients.component';
 import { MyclientsComponent } from '../features/myclients/myclients.component';
 import { TaskmanagmentComponent } from '../features/taskmanagment/taskmanagment.component';
-import { ProfileComponent } from '../features/profile/profile.component';
+import { ProfileComponent } from '../features/team-profile/profile.component';
 import { SettingsComponent } from '../features/settings/settings.component';
 import { TeamDocumentsUploadComponent } from '../features/team-documents-upload/team-documents-upload.component';
 

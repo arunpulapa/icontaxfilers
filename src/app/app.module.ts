@@ -13,7 +13,7 @@ import { ClientsComponent } from './teams/features/clients/clients.component';
 import { TaskmanagmentComponent } from './teams/features/taskmanagment/taskmanagment.component';
 import { MyclientsComponent } from './teams/features/myclients/myclients.component';
 import { AssignedleadsComponent } from './teams/features/assignedleads/assignedleads.component';
-import { ProfileComponent } from './teams/features/profile/profile.component';
+import { ProfileComponent } from './teams/features/team-profile/profile.component';
 import { SettingsComponent } from './teams/features/settings/settings.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';

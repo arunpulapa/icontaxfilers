@@ -12,11 +12,10 @@
       <!-- Client name / ID -->
       <div class="client-info">
         <div class="client-pill">
-          <div class="mb-4">
-            <label class="font-semibold">Client ID</label>
-            <input type="text" [(ngModel)]="clientId" placeholder="Enter Client ID (GUID)"
-              class="border rounded px-3 py-2 w-full" />
-          </div>
+         <div *ngIf="clientId" class="client-id-banner" style="margin-bottom:12px; font-weight:600;">
+  Selected Client ID: {{ clientId }}
+</div>
+
 
         </div>
         <div class="doc-count" *ngIf="documents?.length">

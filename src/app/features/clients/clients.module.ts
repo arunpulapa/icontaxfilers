@@ -15,6 +15,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { SearchclientComponent } from './components/searchclient/searchclient.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -35,7 +39,11 @@ import { SearchclientComponent } from './components/searchclient/searchclient.co
     MatTableModule,
     MatSelectModule,
     MatRadioModule,
-    ReactiveFormsModule
-  ]
+    ReactiveFormsModule,
+    MatSnackBarModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
+]
 })
 export class ClientsModule { }

@@ -1,73 +1,82 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
-import { Client } from '../../../core/models/client.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { environment } from 'src/environment/environment';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Client } from 'src/app/core/models/client.model';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
-  private clients: Client[] = [
-    {
-      id: '1',
-      name: 'Ravi Kumar',
-      email: 'ravi@test.com',
-      phone: '9876543210',
-      status: 'active',
-      createdAt: new Date(),
-      team: 'Tax Filing'
-    },
-    {
-      id: '2',
-      name: 'Anita Sharma',
-      email: 'anita@test.com',
-      status: 'inactive',
-      createdAt: new Date(),
-      team: 'Audit'
-    }
-  ];
+  addClient(newClient: Client) {
+    throw new Error('Method not implemented.');
+  }
+  private baseUrl = `${environment.apiBaseUrl}/Clients`; // as in your code
 
-  private clients$ = new BehaviorSubject<Client[]>(this.clients);
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   getClients(): Observable<Client[]> {
-    return this.clients$.asObservable();
+    const url = `${this.baseUrl}`;
+    const params = new HttpParams().set('role', 'Client'); // adjust if backend expects other value
+
+    return this.http.get<any[]>(url, {
+      headers: this.auth.getAuthHeaders(),
+      params
+    }).pipe(
+      map(items => (items || []).map(i => this.normalize(i)))
+    );
   }
 
-  getClient(id: string): Observable<Client | undefined> {
-    return of(this.clients.find(c => c.id === id));
+  getClient(id: string | number): Observable<Client> {
+    const url = `${this.baseUrl}/Get/${id}`;
+    return this.http.get<any>(url, { headers: this.auth.getAuthHeaders() }).pipe(
+      map(i => this.normalize(i))
+    );
   }
 
-  addClient(client: Client): void {
-    this.clients.push({ ...client, id: Date.now().toString(), createdAt: new Date() });
-    this.clients$.next(this.clients);
+  createClient(payload: any) {
+    const url = `${this.baseUrl}/Create`;
+    return this.http.post(url, payload, { headers: this.auth.getAuthHeaders(), observe: 'response' as const });
   }
 
-  updateClient(updated: Client): void {
-    const idx = this.clients.findIndex(c => c.id === updated.id);
-    if (idx > -1) {
-      this.clients[idx] = updated;
-      this.clients$.next(this.clients);
-    }
+  updateClient(id: string | number, payload: any) {
+    const url = `${this.baseUrl}/Update/${id}`;
+    return this.http.put(url, payload, { headers: this.auth.getAuthHeaders(), observe: 'response' as const });
   }
 
-  deleteClient(id: string): void {
-    this.clients = this.clients.filter(c => c.id !== id);
-    this.clients$.next(this.clients);
+  deleteClient(id: string | number) {
+    const url = `${this.baseUrl}/Delete/${id}`;
+    return this.http.delete(url, { headers: this.auth.getAuthHeaders(), observe: 'response' as const });
   }
 
+  getClientsPaged(page = 0, pageSize = 25, search = ''): Observable<{ items: Client[]; total: number }> {
+    const url = `${this.baseUrl}/GetPaged`;
+    let params = new HttpParams().set('page', String(page)).set('pageSize', String(pageSize));
+    if (search) params = params.set('search', search);
 
+    return this.http.get<{ items: any[]; total: number }>(url, {
+      headers: this.auth.getAuthHeaders(),
+      params
+    }).pipe(
+      map(r => ({ items: (r.items || []).map(i => this.normalize(i)), total: r.total ?? 0 }))
+    );
+  }
 
-  searchClients(searchText: string): Observable<Client[]> {
-  const t = searchText.toLowerCase().trim();
-  if (!t) return this.getClients();
-
-  return this.getClients().pipe(
-    map((clients: any[]) =>
-      clients.filter(c =>
-        c.name?.toLowerCase().includes(t) ||
-        c.email?.toLowerCase().includes(t) ||
-        c.phone?.toLowerCase().includes(t) ||
-        c.id?.toString().toLowerCase().includes(t)
-      )
-    )
-  );
-}
-
+  private normalize(i: any): Client {
+    i = i || {};
+    const first = (i.firstName ?? '').toString().trim();
+    const last = (i.lastName ?? '').toString().trim();
+    const name = (i.name ?? `${first} ${last}`).toString().trim() || i.email || '';
+    const rawStatus = (i.status ?? i.role ?? '').toString();
+    return {
+      id: i.id ?? i._id ?? '',
+      name,
+      email: i.email ?? null,
+      contact: i.contact ?? null,
+      contact2: i.contact2 ?? null,
+      phone: (i.contact ?? i.phone ?? '') || null,
+      status: rawStatus || null,
+      team: i.teamName ?? i.team ?? null,
+      role: i.role ?? null
+    };
+  }
 }

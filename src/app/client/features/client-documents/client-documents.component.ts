@@ -17,11 +17,17 @@ interface ClientDocument {
 })
 export class ClientDocumentsComponent implements OnInit {
 
-  clientId: string = '59';           // auto-filled
-  clientName: string = '';         // auto-filled
+  /* ===============================
+     LOGGED-IN CLIENT INFO
+     =============================== */
+  clientId!: string;        // GUID
+  clientName = '';
 
-  private api = environment.apiBaseUrl;
+  private api = environment.apiBaseUrl; // https://iconfilers.club/IconFilers/api
 
+  /* ===============================
+     DOCUMENT STATE
+     =============================== */
   documentTypes: string[] = [];
   documentType = '';
 
@@ -33,103 +39,129 @@ export class ClientDocumentsComponent implements OnInit {
   filteredDocuments: ClientDocument[] = [];
   search = '';
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  /** Attach Authorization header */
+  /* ===============================
+     AUTH HEADER (Bearer Token)
+     =============================== */
   private authOptions(removeContentType = false) {
     const token = this.authService.getToken();
     let headers = new HttpHeaders();
 
-    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
-    if (removeContentType) headers = headers.delete('Content-Type');
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    // DO NOT set Content-Type for FormData
+    if (removeContentType) {
+      headers = headers.delete('Content-Type');
+    }
 
     return { headers };
   }
 
+  /* ===============================
+     INIT
+     =============================== */
   ngOnInit(): void {
-    // 🔹 Load user from AuthService (localStorage)
     const user: User | null = this.authService.getUser();
 
-    if (user) {
-      this.clientId = String(user.id); // user.id → backend ID
-      this.clientName = user.firstName + ' ' + user.lastName;
+    console.log('[ClientDocuments] user:', user);
+
+    if (!user || !user.id) {
+      console.error('[ClientDocuments] Client ID missing');
+      return;
     }
 
-    console.log("Client ID auto-detected:", this.clientId);
+    // ✅ user.id is GUID (string)
+    this.clientId = String(user.id);
+    this.clientName = [user.firstName, user.lastName].filter(Boolean).join(' ');
 
     this.loadDocumentTypes();
     this.loadDocuments();
   }
 
-  /** LOAD DOCUMENT TYPE LIST */
-  private loadDocumentTypes() {
+  /* ===============================
+     LOAD DOCUMENT TYPES
+     =============================== */
+  private loadDocumentTypes(): void {
     const url = `${this.api}/WorkFlow/GetTypes`;
 
     this.http.get<{ type: string }[]>(url, this.authOptions()).subscribe({
-      next: res => (this.documentTypes = res.map(x => x.type)),
-      error: err => console.error("Load types error:", err)
+      next: res => {
+        this.documentTypes = (res || []).map(x => x.type);
+      },
+      error: err => console.error('[ClientDocuments] Load types error', err)
     });
   }
 
-  /** LOAD EXISTING DOCUMENTS */
- loadDocuments(): void {
-  const fixedClientId = '59'; // 🔥 ALWAYS FORCE 57
+  /* ===============================
+     LOAD CLIENT DOCUMENTS
+     =============================== */
+  loadDocuments(): void {
+    if (!this.clientId) return;
 
-  const url = `${this.api}/clients/${fixedClientId}/documents`;
+    const url = `${this.api}/clients/${this.clientId}/documents`;
 
-  console.log('[DocumentsComponent] loadDocuments → GET', url);
+    this.http.get<ClientDocument[]>(url, this.authOptions()).subscribe({
+      next: docs => {
+        this.documents = docs || [];
+        this.applyFilter();
+      },
+      error: err => {
+        console.error('[ClientDocuments] Load documents error', err);
+        this.documents = this.filteredDocuments = [];
+      }
+    });
+  }
 
-  this.http.get<ClientDocument[]>(url, this.authOptions()).subscribe({
-    next: (docs) => {
-      this.documents = docs || [];
-      this.applyFilter();
-    },
-    error: (err) => {
-      console.error('[DocumentsComponent] loadDocuments ERROR', err);
-      this.documents = this.filteredDocuments = [];
-    },
-  });
-}
-
-
-  /** SEARCH FILTER */
-  applyFilter() {
-    const term = this.search.toLowerCase();
+  /* ===============================
+     SEARCH
+     =============================== */
+  applyFilter(): void {
+    const term = (this.search || '').toLowerCase();
 
     this.filteredDocuments = !term
       ? this.documents
-      : this.documents.filter(
-          d =>
-            d.fileName.toLowerCase().includes(term) ||
-            d.documentType.toLowerCase().includes(term)
+      : this.documents.filter(d =>
+          d.fileName.toLowerCase().includes(term) ||
+          d.documentType.toLowerCase().includes(term)
         );
   }
 
-  /** FILE INPUT & DRAG/DROP */
- onFilesSelected(event: Event): void {
-  const target = event.target as HTMLInputElement;
-  const files = target.files ? Array.from(target.files) as File[] : [];
-  this.selectedFiles = [...this.selectedFiles, ...files];
-}
-
+  /* ===============================
+     FILE HANDLING
+     =============================== */
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+    this.selectedFiles = [...this.selectedFiles, ...files];
+  }
 
   onDragOver(e: DragEvent) {
     e.preventDefault();
     this.isDragOver = true;
   }
+
   onDragLeave(e: DragEvent) {
     e.preventDefault();
     this.isDragOver = false;
   }
- onDrop(e: DragEvent) {
-  e.preventDefault();
-  this.isDragOver = false;
 
-  if (e.dataTransfer?.files?.length) {
-    const list = Array.from(e.dataTransfer.files) as File[];
-    this.selectedFiles = [...this.selectedFiles, ...list];
+  onDrop(e: DragEvent) {
+    e.preventDefault();
+    this.isDragOver = false;
+
+    if (e.dataTransfer?.files?.length) {
+      this.selectedFiles = [
+        ...this.selectedFiles,
+        ...Array.from(e.dataTransfer.files)
+      ];
+    }
   }
-}
 
   clearSelected() {
     this.selectedFiles = [];
@@ -140,38 +172,32 @@ export class ClientDocumentsComponent implements OnInit {
     this.selectedFiles = [...this.selectedFiles];
   }
 
-  /** UPLOAD DOCUMENTS */
+  /* ===============================
+     UPLOAD DOCUMENTS (POST)
+     =============================== */
 upload(): void {
-  console.log('[DocumentsComponent] upload()', {
-    clientId: this.clientId,
-    documentType: this.documentType,
-    files: this.selectedFiles.length
-  });
+  if (this.uploading) return;
 
-  if (!this.selectedFiles.length) {
-    alert('Please select at least one file.');
+  if (!this.clientId || !this.documentType || !this.selectedFiles.length) {
     return;
   }
-  if (!this.documentType) {
-    alert('Please choose a document type.');
-    return;
-  }
-
-  const fixedClientId = '57';   // 🔥 ALWAYS FORCE 57  
-  const formData = new FormData();
-
-  this.selectedFiles.forEach(file =>
-    formData.append('files', file, file.name)
-  );
-
-  formData.append('documentType', this.documentType);
-  formData.append('clientId', fixedClientId);
-
-  const url = `${this.api}/clients/${fixedClientId}/documents`; // 🔥 Always 57
-
-  console.log('[DocumentsComponent] POST', url);
 
   this.uploading = true;
+
+  const formData = new FormData();
+
+  // ✅ files
+  this.selectedFiles.forEach(file => {
+    formData.append('files', file, file.name);
+  });
+
+  // ✅ required fields
+  formData.append('documentType', this.documentType);
+
+  // 🔥 IMPORTANT: SEND clientId IN BODY
+  formData.append('clientId', this.clientId);
+
+  const url = `${this.api}/clients/${this.clientId}/documents`;
 
   this.http.post(url, formData, this.authOptions(true)).subscribe({
     next: () => {
@@ -180,35 +206,43 @@ upload(): void {
       this.documentType = '';
       this.loadDocuments();
     },
-    error: (err) => {
+    error: err => {
       this.uploading = false;
-      console.error('[DocumentsComponent] upload ERROR', err);
-    },
+      console.error('[ClientDocuments] upload ERROR', err);
+    }
   });
 }
 
 
-  /** DOWNLOAD */
-  download(doc: ClientDocument) {
+  /* ===============================
+     DOWNLOAD
+     =============================== */
+  download(doc: ClientDocument): void {
     const url = `${this.api}/clients/${this.clientId}/documents/${doc.id}`;
 
-    this.http.get(url, { responseType: 'blob', ...this.authOptions() }).subscribe(blob => {
-      const a = document.createElement("a");
+    this.http.get(url, {
+      responseType: 'blob',
+      ...this.authOptions()
+    }).subscribe(blob => {
+      const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = doc.fileName;
       a.click();
+      URL.revokeObjectURL(a.href);
     });
   }
 
-  /** DELETE */
-  delete(doc: ClientDocument) {
+  /* ===============================
+     DELETE
+     =============================== */
+  delete(doc: ClientDocument): void {
     if (!confirm(`Delete "${doc.fileName}"?`)) return;
 
     const url = `${this.api}/clients/${this.clientId}/documents/${doc.id}`;
 
     this.http.delete(url, this.authOptions()).subscribe({
       next: () => this.loadDocuments(),
-      error: err => console.error("Delete error:", err)
+      error: err => console.error('[ClientDocuments] Delete error', err)
     });
   }
 }

@@ -10,7 +10,7 @@ export class ClientService {
   return this.http.put(url, payload); // <-- MUST RETURN this
 }
 
-  // environment.apiBaseUrl should be: https://aspnetclusters-205348-0.cloudclusters.net/api
+  // environment.apiBaseUrl should be: https://iconfilers.club/IconFilers/api
   private apiBase = environment.apiBaseUrl.replace(/\/+$/, '');
 
   constructor(

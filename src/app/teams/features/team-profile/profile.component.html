@@ -1,0 +1,59 @@
+<div class="profile-page">
+
+  <!-- Left: profile summary card -->
+  <section class="profile-summary-card">
+    <div class="profile-header">
+      <div class="avatar-circle">
+        <span>{{ fullName | slice:0:1 | uppercase }}</span>
+      </div>
+
+      <div class="name-block">
+        <h2 class="name">{{ fullName }}</h2>
+        <span class="role-chip">{{ roleLabel }}</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="profile-info">
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>email</mat-icon>
+          <span>Email</span>
+        </div>
+        <div class="info-value">{{ email || 'Not set' }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>badge</mat-icon>
+          <span>User ID</span>
+        </div>
+        <div class="info-value">{{ userId || '—' }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>account_circle</mat-icon>
+          <span>Display Name</span>
+        </div>
+        <div class="info-value">{{ fullName || 'User' }}</div>
+      </div>
+    </div>
+
+    <div class="profile-footer">
+      <div class="meta-pill">
+        <mat-icon>verified_user</mat-icon>
+        <span>Profile Secure</span>
+      </div>
+      <button mat-stroked-button color="primary" type="button">
+        <mat-icon>edit</mat-icon>
+        Edit Profile
+      </button>
+    </div>
+  </section>
+
+  <!-- Right: editable form goes here later -->
+  <!-- <section class="profile-form-card">...</section> -->
+
+</div>

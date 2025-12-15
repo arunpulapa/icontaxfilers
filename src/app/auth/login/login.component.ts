@@ -41,11 +41,10 @@ export class LoginComponent {
             this.errorMessage = 'Invalid login response';
             return;
           }
-
           // Save token & user
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify(res.user));
-          // localStorage.setItem('role', appRole);
+          sessionStorage.setItem('token', res.token);
+          sessionStorage.setItem('user', JSON.stringify(res.user));
+          // sessionStorage.setItem('role', appRole);
 
 
           // 🔹 Backend roles → frontend roles
@@ -70,7 +69,7 @@ export class LoginComponent {
           }
 
 
-          localStorage.setItem('role', appRole);
+          sessionStorage.setItem('role', appRole);
 
           // 🔹 Redirect by *normalized* role
           if (appRole === 'admin') {

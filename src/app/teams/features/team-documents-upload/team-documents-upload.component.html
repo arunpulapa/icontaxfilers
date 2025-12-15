@@ -1,179 +1,116 @@
 <div class="docs-page">
-  <mat-card class="docs-card">
-    <!-- Header -->
-    <div class="page-header">
-      <div class="title-block">
-        <h2 class="title">Client Documents</h2>
-        <p class="subtitle">
-          Upload and manage documents for this client.
-        </p>
+  <div class="docs-card">
+
+    <!-- HEADER -->
+    <header class="docs-header">
+      <div class="header-left">
+        <h1>Client Documents</h1>
+        <p>Upload and manage documents for this client.</p>
       </div>
 
-      <!-- Client name / ID -->
-      <div class="client-info">
-        <div class="client-pill">
-          <div class="mb-4">
-            <label class="font-semibold">Client ID</label>
-            <input type="text" [(ngModel)]="clientId" placeholder="Enter Client ID (GUID)"
-              class="border rounded px-3 py-2 w-full" />
-          </div>
-
-        </div>
-        <div class="doc-count" *ngIf="documents?.length">
-          <mat-icon>folder</mat-icon>
-          <span>{{ documents.length }} document{{ documents.length > 1 ? 's' : '' }}</span>
-        </div>
+      <div class="header-right">
+        <span class="pill user">👤 {{ clientName }}</span>
+        <span class="pill count" *ngIf="documents.length">
+          📁 {{ documents.length }} documents
+        </span>
       </div>
+    </header>
 
-      <ng-template #noClient>
-        <div class="client-pill client-pill--warning">
-          <mat-icon>warning</mat-icon>
-          <span>No client selected. Please select a client to manage documents.</span>
-        </div>
-      </ng-template>
-    </div>
+    <!-- MAIN -->
+    <div class="docs-layout">
 
-    <!-- Upload area + document list -->
-    <div class="layout">
-      <!-- LEFT: Upload panel -->
-      <div class="upload-panel">
-        <h3 class="section-title">Upload documents</h3>
+      <!-- UPLOAD PANEL -->
+      <section class="upload-panel">
+        <h2>Upload documents</h2>
 
-        <!-- Doc type -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Document Type</mat-label>
+        <label>Document Type</label>
+        <select [(ngModel)]="documentType">
+          <option value="">Select document type</option>
+          <option *ngFor="let t of documentTypes" [value]="t">
+            {{ t }}
+          </option>
+        </select>
 
-          <mat-select [(ngModel)]="documentType" placeholder="Select document type">
-            <mat-option value="">Select document type</mat-option>
+        <span class="required">Required</span>
 
-            <mat-option *ngFor="let t of documentTypes" [value]="t">
-              {{ t }}
-            </mat-option>
-          </mat-select>
+        <!-- DROP ZONE -->
+        <div
+          class="drop-zone"
+          [class.active]="isDragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div class="icon">☁️</div>
 
-          <mat-hint *ngIf="!documentType">Required</mat-hint>
-        </mat-form-field>
+          <p><strong>Drag & drop</strong> files here</p>
+          <span class="or">or</span>
 
-
-        <!-- Drag & drop box -->
-        <div class="drop-zone" [class.drop-zone--active]="isDragOver" (dragover)="onDragOver($event)"
-          (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
-          <mat-icon>cloud_upload</mat-icon>
-          <p>Drag & drop files here</p>
-          <span class="muted">or</span>
-          <button mat-stroked-button color="primary" (click)="fileInput.click()">
+          <button type="button" (click)="fileInput.click()">
             Choose files
           </button>
 
-          <input #fileInput type="file" multiple (change)="onFilesSelected($event)" hidden />
+          <small>PDF, JPG, PNG, DOCX up to 10MB each</small>
 
-          <p class="hint">PDF, JPG, PNG, DOCX up to 10MB each.</p>
+          <input
+            #fileInput
+            type="file"
+            multiple
+            (change)="onFilesSelected($event)"
+          />
         </div>
 
-        <!-- Selected files list -->
-        <div class="selected-files" *ngIf="selectedFiles.length">
-          <div class="files-header">
-            <span>Files to upload ({{ selectedFiles.length }})</span>
-            <button mat-button color="warn" (click)="clearSelected()">
-              Clear all
-            </button>
-          </div>
-
-          <div class="file-pill" *ngFor="let f of selectedFiles; let i = index">
-            <mat-icon class="file-icon">description</mat-icon>
-            <div class="file-meta">
-              <div class="name">{{ f.name }}</div>
-              <div class="size">{{ f.size | number }} bytes</div>
-            </div>
-            <button mat-icon-button (click)="removeSelected(i)">
-              <mat-icon>close</mat-icon>
-            </button>
+        <!-- SELECTED FILES -->
+        <div class="files" *ngIf="selectedFiles.length">
+          <div class="file" *ngFor="let f of selectedFiles; let i = index">
+            <span>{{ f.name }}</span>
+            <button (click)="removeSelected(i)">✕</button>
           </div>
         </div>
 
-        <!-- Upload button -->
-        <div class="upload-actions">
-          <button mat-flat-button color="primary" class="upload-btn" (click)="upload()"
-            [disabled]="!selectedFiles.length || !documentType || !clientId || uploading">
-            <mat-icon>upload</mat-icon>
-            <span *ngIf="!uploading">Upload documents</span>
-            <span *ngIf="uploading">Uploading...</span>
-          </button>
+        <!-- UPLOAD BUTTON -->
+        <button
+          class="upload-btn"
+          [disabled]="uploading || !documentType || !selectedFiles.length"
+          (click)="upload()"
+        >
+          ⬆ Upload documents
+        </button>
+      </section>
 
-        </div>
-      </div>
-
-      <!-- RIGHT: Existing documents list -->
-      <div class="list-panel">
+      <!-- EXISTING DOCUMENTS -->
+      <section class="list-panel">
         <div class="list-header">
-          <h3 class="section-title">Existing documents</h3>
-
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" placeholder="Search by name or type" />
-            <button mat-icon-button matSuffix *ngIf="search" (click)="search=''; applyFilter()">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
+          <h2>Existing documents</h2>
+          <input
+            type="text"
+            placeholder="Search"
+            [(ngModel)]="search"
+            (input)="applyFilter()"
+          />
         </div>
 
-        <div class="table-wrapper" *ngIf="filteredDocuments?.length; else emptyState">
-          <table mat-table [dataSource]="filteredDocuments" class="docs-table">
-            <!-- Name -->
-            <ng-container matColumnDef="fileName">
-              <th mat-header-cell *matHeaderCellDef>File name</th>
-              <td mat-cell *matCellDef="let d">{{ d.fileName }}</td>
-            </ng-container>
-
-            <!-- Type -->
-            <ng-container matColumnDef="documentType">
-              <th mat-header-cell *matHeaderCellDef>Type</th>
-              <td mat-cell *matCellDef="let d">
-                <span class="type-pill">{{ d.documentType }}</span>
-              </td>
-            </ng-container>
-
-            <!-- Uploaded -->
-            <ng-container matColumnDef="uploadedAt">
-              <th mat-header-cell *matHeaderCellDef>Uploaded</th>
-              <td mat-cell *matCellDef="let d">
-                {{ d.uploadedAt | date: 'MM/dd/yy, HH:mm' }}
-              </td>
-            </ng-container>
-
-            <!-- Actions -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="actions-header">
-                Actions
-              </th>
-              <td mat-cell *matCellDef="let d" class="actions-cell">
-                <button mat-icon-button color="primary" (click)="download(d)">
-                  <mat-icon>download</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="delete(d)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
+        <!-- EMPTY STATE -->
+        <div class="empty" *ngIf="!filteredDocuments.length">
+          <div class="icon">📁</div>
+          <p>No documents uploaded yet.</p>
+          <span>Use the panel on the left to upload files for this client.</span>
         </div>
 
-        <ng-template #emptyState>
-          <div class="empty-state">
-            <mat-icon>folder_open</mat-icon>
-            <p>No documents uploaded yet.</p>
-            <small>Use the panel on the left to upload files for this client.</small>
-          </div>
-        </ng-template>
-      </div>
-    </div>
+        <!-- TABLE -->
+        <table *ngIf="filteredDocuments.length">
+          <tr *ngFor="let d of filteredDocuments">
+            <td>{{ d.fileName }}</td>
+            <td>{{ d.documentType }}</td>
+            <td>{{ d.uploadedAt | date:'short' }}</td>
+            <td class="actions">
+              <button (click)="download(d)">⬇</button>
+              <button (click)="delete(d)">🗑</button>
+            </td>
+          </tr>
+        </table>
+      </section>
 
-    <!-- Loading overlay while uploading -->
-    <div class="loading-overlay" *ngIf="uploading">
-      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     </div>
-  </mat-card>
+  </div>
 </div>
