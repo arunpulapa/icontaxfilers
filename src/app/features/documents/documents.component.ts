@@ -18,7 +18,10 @@ interface ClientDocument {
   fileName: string;
   documentType: string;
   uploadedAt: string; // ISO date string
+  filePath: string;
 }
+
+
 
 @Component({
   selector: 'app-documents',
@@ -149,36 +152,45 @@ export class DocumentsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /* ---------- Load existing docs ---------- */
-  loadDocuments(): void {
-    console.log('[DocumentsComponent] loadDocuments() called with clientId =', this.clientId);
+loadDocuments(): void {
+  console.log('[DocumentsComponent] loadDocuments() clientId =', this.clientId);
 
-    if (!this.clientId) {
-      this.filteredDocuments = this.documents = [];
-      return;
-    }
-
-    // simple guard to avoid duplicate identical calls in quick succession
-    if (this.hasLoadedOnceForCurrentId) {
-      console.log('[DocumentsComponent] loadDocuments: already loaded for this clientId, skipping duplicate call');
-      return;
-    }
-    this.hasLoadedOnceForCurrentId = true;
-
-    const url = `${this.api}/clients/${this.clientId}/documents`;
-    console.log('[DocumentsComponent] loadDocuments → GET', url);
-
-    this.http.get<ClientDocument[]>(url, this.authOptions()).subscribe({
-      next: (docs) => {
-        this.documents = docs || [];
-        this.applyFilter();
-        console.log('[DocumentsComponent] received documents count =', this.documents.length);
-      },
-      error: (err) => {
-        console.error('[DocumentsComponent] loadDocument ERROR', err);
-        this.documents = this.filteredDocuments = [];
-      },
-    });
+  if (!this.clientId) {
+    this.documents = this.filteredDocuments = [];
+    return;
   }
+
+  if (this.hasLoadedOnceForCurrentId) return;
+  this.hasLoadedOnceForCurrentId = true;
+
+  const url = `${this.api}/clients/${this.clientId}/documents/list`;
+  console.log('[DocumentsComponent] GET', url);
+
+  this.http.get<any[]>(url, this.authOptions()).subscribe({
+    next: (docs) => {
+      this.documents = (docs || []).map(d => ({
+        id: d.id,
+        fileName: this.extractFileName(d.filePath),
+        documentType: d.documentType,
+        uploadedAt: d.uploadedAt,
+        filePath: d.filePath   // ✅ REQUIRED
+      }));
+
+      this.applyFilter();
+      console.log('[DocumentsComponent] documents loaded =', this.documents);
+    },
+    error: (err) => {
+      console.error('[DocumentsComponent] loadDocuments ERROR', err);
+      this.documents = this.filteredDocuments = [];
+    }
+  });
+}
+
+  private extractFileName(path: string): string {
+    if (!path) return '';
+    return path.split('/').pop() || '';
+  }
+
 
 
   /* ---------- Search ---------- */
@@ -278,23 +290,25 @@ export class DocumentsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 
+
+
+
+
   /* ---------- Download ---------- */
-  download(doc: ClientDocument): void {
-    const url = `${this.api}/clients/${this.clientId}/documents/${doc.id}`;
-    this.http.get(url, { responseType: 'blob' }).subscribe({
-      next: (blob) => {
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = doc.fileName;
-        a.click();
-        URL.revokeObjectURL(downloadUrl);
-      },
-      error: (err) => {
-        console.error('[DocumentsComponent] download ERROR', err);
-      }
-    });
-  }
+download(doc: ClientDocument): void {
+  const fileUrl = `https://iconfilers.club${doc.filePath}`;
+  console.log('[DocumentsComponent] downloading', fileUrl);
+
+  const a = document.createElement('a');
+  a.href = fileUrl;
+  a.download = doc.fileName; // forces download
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+
 
   /* ---------- Delete ---------- */
   delete(doc: ClientDocument): void {

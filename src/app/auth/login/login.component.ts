@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -9,7 +9,7 @@ import { finalize } from 'rxjs/operators';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
@@ -24,6 +24,61 @@ export class LoginComponent {
     private router: Router,
     private authService: AuthService
   ) { }
+
+ngOnInit(): void {
+  const params = new URLSearchParams(window.location.search);
+
+  const token = params.get('token');
+  const userParam = params.get('user');
+
+  // 🔍 CONSOLE RAW VALUES
+  console.log('🔑 Token from URL:', token);
+  console.log('👤 Encoded user from URL:', userParam);
+
+  if (token && userParam) {
+    // Save token
+    sessionStorage.setItem('token', token);
+
+    // Decode + parse user
+    const user = JSON.parse(decodeURIComponent(userParam));
+
+    // 🔍 CONSOLE PARSED USER
+    console.log('✅ Parsed user object:', user);
+
+    // Save user & role
+    sessionStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('role', user.role.toLowerCase());
+
+    // 🔍 VERIFY STORAGE
+    console.log(
+      '📦 SessionStorage user:',
+      JSON.parse(sessionStorage.getItem('user')!)
+    );
+    console.log(
+      '📦 SessionStorage role:',
+      sessionStorage.getItem('role')
+    );
+
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+
+    // Optional redirect
+    if (user.role.toLowerCase() === 'admin') {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (user.role.toLowerCase() === 'user') {
+      this.router.navigate(['/teams/dashboard']);
+    } else {
+      this.router.navigate(['/client/dashboard']);
+    }
+  }
+}
+
+
+
+
+  
+
+
 
   login() {
     if (this.loginForm.invalid || this.isLoading) return;

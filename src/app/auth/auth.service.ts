@@ -21,15 +21,26 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'https://iconfilers.club/IconFilers'; // your API base
+   private baseUrl = 'https://iconfilers.club/IconFilers';
 
- constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/api/Auth/login`, { email, password });
+    return this.http.post<LoginResponse>(
+      `${this.baseUrl}/api/Auth/login`,
+      { email, password }
+    );
   }
 
-  // 🔹 used by interceptor
+  // ✅ ADD THIS METHOD
+  getMe(): Observable<User> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<User>(
+      `${this.baseUrl}/api/Auth/me`,
+       { headers: this.getAuthHeaders() }
+    );
+  }
+
   getToken(): string | null {
     return sessionStorage.getItem('token');
   }
@@ -41,26 +52,24 @@ export class AuthService {
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
-
     return headers;
   }
-  // 🔹 used by sidebar / guards
+
   getRole(): string | null {
     return sessionStorage.getItem('role');
   }
-  getUserName(): string {
-  const user = this.getUser();
-  return user ? `${user.firstName}` : '';
-}
 
   getUser(): User | null {
     const raw = sessionStorage.getItem('user');
     return raw ? JSON.parse(raw) : null;
   }
 
+  getUserName(): string {
+    const user = this.getUser();
+    return user ? user.firstName : '';
+  }
+
   logout() {
     sessionStorage.clear();
   }
-
-
 }
